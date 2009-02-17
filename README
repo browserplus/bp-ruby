@@ -1,0 +1,16 @@
+This will be the home of the next iteration of the BrowserPlus 
+"RubyInterpreter" service: 
+http://browserplus.yahoo.com/developer/services/?s=RubyInterpreter
+
+This implementation will leverage the upcoming process separation in
+BrowserPlus 2.1.15 to address some community requests, namely:
+
+1. bp_require is silly, we should be able to require()
+2. dependent services should be able to include native extensions
+3. performance improvements (seek help to solve the "select problem")
+4. upgrade to ruby 1.9.1 stable (better i18n support, etc, etc)
+5. more built in extensions to the ruby environment
+   (including the ability to use other services from a ruby service)
+
+stay tuned,
+lloyd
