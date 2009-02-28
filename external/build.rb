@@ -22,6 +22,13 @@ topDir = File.dirname(File.expand_path(__FILE__))
 pkgDir = File.join(topDir, $pkg)
 buildDir = File.join(topDir, "ruby_build_output")
 
+if File.exist? buildDir
+  puts "it looks like ruby is already built, sheepishly refusing to "
+  puts "blow away your build output directory (#{buildDir})"
+  puts "sometimes the best thing to do, is nothing."
+  exit 0
+end
+
 puts "removing previous build artifacts..."
 FileUtils.rm_rf(pkgDir)
 FileUtils.rm_f("#{$pkg}.tar")
