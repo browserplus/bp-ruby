@@ -1,3 +1,5 @@
+Overview:
+
 This will be the home of the next iteration of the BrowserPlus 
 "RubyInterpreter" service: 
 http://browserplus.yahoo.com/developer/services/?s=RubyInterpreter
@@ -11,6 +13,21 @@ BrowserPlus 2.1.15 to address some community requests, namely:
 4. upgrade to ruby 1.9.1 stable (better i18n support, etc, etc)
 5. more built in extensions to the ruby environment
    (including the ability to use other services from a ruby service)
+
+Build Notes:
+
+external/ is where ruby will be fetched and built (and perhaps some
+dependencies for important built-in libs).  the sourceball will be 
+fetched as part of the build, and this will all happend 
+
+Current State:
+
+just gettin' started, focusing on mac first and porting over 
+relavant bits of the old ruby interpreter.
+
+License:
+
+Everything here will be BSD licensed.
 
 stay tuned,
 lloyd

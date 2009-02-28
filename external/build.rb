@@ -20,7 +20,7 @@ end
 
 topDir = File.dirname(File.expand_path(__FILE__))
 pkgDir = File.join(topDir, $pkg)
-buildDir = File.join(topDir, "ruby_build")
+buildDir = File.join(topDir, "ruby_build_output")
 
 puts "removing previous build artifacts..."
 FileUtils.rm_rf(pkgDir)
@@ -77,4 +77,23 @@ if calculated_md5 != $md5
   exit 1
 else
   puts "md5 validated! (#{calculated_md5} == #{$md5})"
+end
+
+# unpack the bugger
+puts "unpacking tarball..."
+if $platform == "Windows"
+  throw "oopsie, implement me please"
+#    system("#{topDir}\\..\\Windows\\bin\\7z.exe x #{tarball}")
+#    system("#{topDir}\\..\\Windows\\bin\\7z.exe x #{pkg}.tar")
+#    FileUtils.rm_f("#{pkg}.tar")
+else
+  system("tar xjf #{$tarball}")
+end
+
+# configure & build
+Dir.chdir(pkgDir) do 
+  puts "configuring ruby..."
+  system("./configure --prefix=#{buildDir} ")
+  system("make")
+  system("make install")
 end
