@@ -1,0 +1,10 @@
+{
+  "type": "provider",
+  "CoreletLibrary": "@ServiceLibrary@",
+  "strings": { 
+    "en": { 
+        "title": "Ruby Engine", 
+		"summary": "A Ruby runtime that allows developers to write new BrowserPlus services faster and easier than before"
+    }
+  }
+}
