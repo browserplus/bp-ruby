@@ -95,12 +95,21 @@ if $platform == "Windows"
 #    FileUtils.rm_f("#{pkg}.tar")
 else
   system("tar xjf #{$tarball}")
-end
 
-# configure & build
-Dir.chdir(pkgDir) do 
-  puts "configuring ruby..."
-  system("./configure --prefix=#{buildDir} ")
-  system("make")
-  system("make install")
+  # configure & build
+  Dir.chdir(pkgDir) do 
+    puts "configuring ruby..."
+
+    # we want these bits to work on tiger and leopard regardless of
+    # where they're 
+    ENV['CFLAGS'] = '-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.4u.sdk'
+    ENV['LDFLAGS'] = '-isysroot /Developer/SDKs/MacOSX10.4u.sdk'
+
+    # now configure...
+    system("./configure --prefix=#{buildDir} ")
+
+    # make & install locally (see configure --prefix arg)
+    system("make")
+    system("make install")
+  end
 end
