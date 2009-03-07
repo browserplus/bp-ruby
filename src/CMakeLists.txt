@@ -27,12 +27,12 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF ()
 
 INCLUDE_DIRECTORIES(
-  "${CMAKE_CURRENT_SOURCE_DIR}/external/ruby/ruby_build_output/include"
-  "${CMAKE_CURRENT_SOURCE_DIR}/external/bpsdk/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../external/bpsdk/include"
 )
 
 LINK_DIRECTORIES(
-  "${CMAKE_CURRENT_SOURCE_DIR}/external/ruby/ruby_build_output/lib"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib"
 )
 
 SET(SRCS service.cpp)
@@ -59,7 +59,7 @@ ENDIF (APPLE)
 
 SET(stdlibDest "${outputDir}/stdlib")
 SET(stdlibSource
-    "${CMAKE_CURRENT_SOURCE_DIR}/external/ruby/ruby_build_output/lib/ruby/1.9.1")
+    "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1")
 
 IF (APPLE)
     SET(RM_CMD rm -rf)
