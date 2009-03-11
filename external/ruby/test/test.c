@@ -10,11 +10,23 @@ static void runInterpreter(int argc, char ** argv)
         RUBY_INIT_STACK;
         ruby_init();
 
+
         int error = 0; 
-        // now do something 
+        ruby_script("My ruby embedding test");
         ruby_incpush("../ruby_build_output/lib/ruby/1.9.1");
-// not found and crash
+        ruby_incpush("../ruby_build_output/lib/ruby/1.9.1/i386-darwin9.6.0");
+        rb_eval_string_protect("puts \"load path: #{$LOAD_PATH}\"", &error);
+        printf("printing loadpath: %d\n", error);
         rb_eval_string_protect("require 'digest/sha2'", &error);
+        printf("requiring something that exists: %d\n", error);
+
+        rb_eval_string_protect("require 'digest/sha17'", &error);
+        printf("requiring something that doesn't exist: %d\n", error);
+
+        // now do something 
+
+// not found and crash
+//        rb_eval_string_protect("require 'digest/sha2'", &error);
         rb_eval_string_protect("foo = \"world\"\nputs \"hi #{foo}\"", &error); 
         printf("evaluated shtuff: %d\n", error); 
         rb_eval_string_protect("foo = \"world\"\nputs \"hello #{foo}\"",
