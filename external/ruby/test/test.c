@@ -3,9 +3,18 @@
 
 RUBY_GLOBAL_SETUP
 
-static void runInterpreter(int argc, char ** argv)
+static void runInterpreter(int r_argc, char ** r_argv)
 {
+    int argc = 1;
+    char ** argv = (char **) calloc(2, sizeof(char *));
+    argv[0] = "BrowserPlus Embedded Ruby";
+    argv[1] = NULL;
+
+    // still unclear wether this is all right.  probably performed in
+    // a thread spawned at allocation time
     ruby_sysinit(&argc, &argv);
+
+//    ruby_sysinit(&argc, &argv);
     {
         RUBY_INIT_STACK;
         ruby_init();
@@ -19,9 +28,14 @@ static void runInterpreter(int argc, char ** argv)
         printf("printing loadpath: %d\n", error);
         rb_eval_string_protect("require 'digest/sha2'", &error);
         printf("requiring something that exists: %d\n", error);
-
         rb_eval_string_protect("require 'digest/sha17'", &error);
         printf("requiring something that doesn't exist: %d\n", error);
+        error = 0;
+        
+        rb_eval_string_protect("$foo = 'bar'", &error);        
+        printf("now understand scope of things: %d\n", error);
+        rb_eval_string_protect("puts $foo", &error);        
+        printf("now understood scope of things: %d\n", error);
 
         // now do something 
 

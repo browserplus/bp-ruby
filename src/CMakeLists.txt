@@ -27,17 +27,21 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF ()
 
 INCLUDE_DIRECTORIES(
-  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include/ruby-1.9.1"
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/bpsdk/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-tools"
 )
 
 LINK_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib"
 )
 
-SET(SRCS service.cpp)
-
-ADD_LIBRARY(${serviceName} MODULE ${SRCS})
+SET(EXT_SRCS
+  ${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-tools/bptypeutil.cpp
+)
+SET(SRCS service.cpp RubyInterpreter.cpp)
+SET(HDRS RubyInterpreter.hh)
+ADD_LIBRARY(${serviceName} MODULE ${EXT_SRCS} ${SRCS} ${HDRS})
 
 TARGET_LINK_LIBRARIES(${serviceName} ruby-static)
 
@@ -59,7 +63,13 @@ ENDIF (APPLE)
 
 SET(stdlibDest "${outputDir}/stdlib")
 SET(stdlibSource
-    "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1")
+"${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1"
+)
+
+SET(extDest "${outputDir}/ext")
+SET(extSource
+"${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1/i386-darwin9.6.0"
+)
 
 IF (APPLE)
     SET(RM_CMD rm -rf)
@@ -73,6 +83,9 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${RM_CMD} \"${stdlibDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
                         \"${stdlibSource}\" \"${stdlibDest}\"
+    COMMAND ${RM_CMD} \"${extDest}\"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        \"${extSource}\" \"${extDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
             \"${outputDir}\"

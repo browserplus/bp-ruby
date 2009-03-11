@@ -5,98 +5,52 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// header files from the BrowserPlus SDK
 #include "ServiceAPI/bpcfunctions.h"
 #include "ServiceAPI/bpdefinition.h"
 #include "ServiceAPI/bperror.h"
 #include "ServiceAPI/bppfunctions.h"
 #include "ServiceAPI/bptypes.h"
 
+// header files from the bp-service-tools project, which makes it
+// easier to deal in types that one may transmit across the service
+// boundary
+#include "bptypeutil.h"
+
+// an abstraction around ruby 
+#include "RubyInterpreter.hh"
+
 #include <map>
 #include <string>
+#include <iostream>
 
 const BPCFunctionTable * g_bpCoreFunctions;
-/*
-// an stl map which keeps track of attachments & bindings 
-static std::map<unsigned int, RubyCorelet *> s_attachments;
-static std::list<RubyCorelet *> s_rubyCorelets;
-*/
 
-// at allocation time, we read and evaluate the ruby script in a
-// clean binding
+
 int
 BPPAllocate(void ** instance, unsigned int attachID,
             const BPElement * contextMap)
 {
     int rc = 0;
-/*
 
-    // this means we must new an object in the correct evaluation context
-    *instance = NULL;
-
-    if (attachID == 0) {
-        // XXX: for now we don't support the native interface so good.
-    } else {
-        // locking please!
-        s_lock->lock();
-        std::map<unsigned int, RubyCorelet *>::iterator it;
-        it = s_attachments.find(attachID);
-        if (it == s_attachments.end()) {
-            g_bpCoreFunctions->log(
-                BP_ERROR,
-                "(RubyInterpreter) BPPAllocate called with invalid attachment: %u",
-                attachID);
-            rc = 1;
-        } else {
-            bp::Object * ctx = bp::Object::build(contextMap);
-            *instance = (void *) it->second->instance(
-                dynamic_cast<bp::Map *>(ctx));
-            delete ctx;
-        }
-        s_lock->unlock();
-    }
-*/
     return rc;
 }
 
 void
 BPPDestroy(void * instance)
 {
-/*
-    if (instance != NULL) {
-        delete (RubyCoreletInstance *) instance;
-    }
-*/
 }
 
 void
 BPPShutdown(void)
 {
-/*
-    // delete all ruby corelets
-    std::list<RubyCorelet *>::iterator i;
-    for (i = s_rubyCorelets.begin(); i != s_rubyCorelets.end(); i++)
-        delete *i;
-    
-    RubyEvaluatorShutdown();
-    delete s_lock;
-*/
+    ruby::shutdown();
 }
 
 void
 BPPInvoke(void * instance, const char * funcName,
           unsigned int tid, const BPElement * elem)
 {
-/*
-    if (instance != NULL) {
-        RubyCoreletInstance * cinstance = (RubyCoreletInstance *) instance;
-        bp::Map * args = NULL;
-        args = (bp::Map *) bp::Object::build(elem);
-        cinstance->invoke(funcName, tid, args);
-        delete args;
-    } else {
-        g_bpCoreFunctions->postError(tid, BPE_NOT_IMPLEMENTED, NULL);
-    }
-*/
 }
 
 // a description of this corelet.
@@ -205,7 +159,6 @@ const BPCoreletDefinition *
 BPPInitialize(const BPCFunctionTable * bpCoreFunctions,
               const BPElement * parameterMap)
 {
-/*
     // the name of the ruby script and path can be extracted from the
     // parameter map 
     bp::Object * obj = bp::Object::build(parameterMap);
@@ -219,10 +172,16 @@ BPPInitialize(const BPCFunctionTable * bpCoreFunctions,
     std::string path(((bp::String *) obj->get("CoreletDirectory"))->value());
 
     g_bpCoreFunctions = bpCoreFunctions;
-    s_lock = new bp::sync::Mutex;
-    RubyEvaluatorStartup(path);
+
     delete obj;
-*/
+
+    // this will go in the BrowserPlusCore log file at info level.  nice.
+    std::cout << "initializing ruby interpreter with service path: "
+              << path << std::endl;
+
+    // now let's initialize the ruby Interpreter
+    (void) ruby::initialize(path);
+
     return &s_rubyInterpreterDef;
 }
 
