@@ -42,7 +42,7 @@
 // header files from the bp-service-tools project, which makes it
 // easier to deal in types that one may transmit across the service
 // boundary
-#include "bptypeutil.h"
+#include "bptypeutil.hh"
 
 // an abstraction around ruby 
 #include "RubyInterpreter.hh"
@@ -50,6 +50,12 @@
 #include <map>
 #include <string>
 #include <iostream>
+
+#ifdef WIN32
+#define PATHSEP "\\"
+#else
+#define PATHSEP "/"
+#endif
 
 const BPCFunctionTable * g_bpCoreFunctions;
 
@@ -92,6 +98,47 @@ BPCoreletDefinition s_rubyInterpreterDef = {
 const BPCoreletDefinition *
 BPPAttach(unsigned int attachID, const BPElement * paramMap)
 {
+    const BPCoreletDefinition * def = NULL;
+
+    // the name of the ruby script and path can be extracted from the
+    // parameter map 
+    bp::Object * obj = bp::Object::build(paramMap);
+
+    // first get the path
+    if (!obj->has("CoreletDirectory", BPTString)) {
+        delete obj;
+        return NULL;
+    }
+    std::string path;
+    path.append(((bp::Path *) obj->get("CoreletDirectory"))->value());
+
+    // now get the script name
+    if (!obj->has("Parameters", BPTMap)) {
+        delete obj;
+        return NULL;
+    }
+
+    bp::Map * params = (bp::Map *) obj->get("Parameters");
+    
+    if (!params->has("ScriptFile", BPTString)) {
+        delete obj;
+        return NULL;
+    }
+
+    path.append(PATHSEP);
+    path.append(((bp::Path *) params->get("ScriptFile"))->value());    
+
+    std::string error;
+    bp::service::Description * d = ruby::loadRubyService(path, error);
+
+    if (d == NULL) {
+        std::cerr << "error loading ruby service: " << error
+                  << std::endl;
+    } else {
+        std::cout << "loaded ruby service: " << std::endl
+                  << d->toHumanReadableString();
+    }
+    
 /*
     const BPCoreletDefinition * def = NULL;
 

@@ -26,10 +26,14 @@ IF (NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE "Debug")
 ENDIF ()
 
+SET(CPPTOOLS_DIR
+  "${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-tools/CppTools/src"
+)
+
 INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include/ruby-1.9.1"
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/bpsdk/include"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-tools"
+  "${CPPTOOLS_DIR}"
 )
 
 LINK_DIRECTORIES(
@@ -37,7 +41,9 @@ LINK_DIRECTORIES(
 )
 
 SET(EXT_SRCS
-  ${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-tools/bptypeutil.cpp
+  "${CPPTOOLS_DIR}/bptypeutil.cpp"
+  "${CPPTOOLS_DIR}/bpservicedescription.cpp"
+  "${CPPTOOLS_DIR}/bpserviceversion.cpp"
 )
 SET(SRCS service.cpp RubyInterpreter.cpp)
 SET(HDRS RubyInterpreter.hh)

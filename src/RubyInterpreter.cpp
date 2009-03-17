@@ -62,3 +62,11 @@ void ruby::shutdown(void)
 {
     (void) ruby_finalize();
 }
+
+bp::service::Description *
+ruby::loadRubyService(const std::string & pathToRubyFile,
+                      std::string & oError)
+{
+    oError.append("implement me!");
+    return NULL;
+}
