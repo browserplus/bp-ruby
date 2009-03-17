@@ -26,33 +26,17 @@
  *  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  *  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
-#ifndef __RUBYINTERPRETER_HH__
-#define __RUBYINTERPRETER_HH__
+#include "RubyUtils.hh"
 
-#include "ServiceAPI/bptypes.h"
-#include "bpservicedescription.hh"
+#include "i386-darwin9.6.0/ruby/config.h"
+#include "ruby.h"
 
-#include <string>
-
-namespace ruby {
-    // intialize the ruby interpreter, given the path to this service.
-    // this will call all required initialization routines and
-    // will correctly populate load paths.
-    void initialize(const std::string & pathToRubyServiceDataDir);
-
-    // given a path to a entry point ruby file, load the file and
-    // extract a description.
-    // on error, NULL is returned and a human readable error is returned
-    // in the oError output param
-    bp::service::Description *
-        loadRubyService(const std::string & pathToRubyFile,
-                        std::string & oError);
-    
-
-    // shutdown the ruby interpreter, freeing all possible resources.
-    void shutdown(void);
+std::string ruby::getLastError()
+{
+    VALUE lasterr = rb_gv_get("$!");
+    VALUE errMessage = rb_obj_as_string(lasterr);
+    return RSTRING_PTR(errMessage);
 }
-
-#endif

@@ -28,31 +28,46 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __RUBYINTERPRETER_HH__
-#define __RUBYINTERPRETER_HH__
+/**
+ * An in memory representation of "work" that the interpreter must
+ * perform.  This data structure is marshalled to the thread upon
+ * which the interpreter is running
+ */
+#ifndef __RUBY_WORK_HH__
+#define __RUBY_WORK_HH__
 
-#include "ServiceAPI/bptypes.h"
-#include "bpservicedescription.hh"
+#include "util/bpsync.hh"
 
 #include <string>
 
-namespace ruby {
-    // intialize the ruby interpreter, given the path to this service.
-    // this will call all required initialization routines and
-    // will correctly populate load paths.
-    void initialize(const std::string & pathToRubyServiceDataDir);
+namespace ruby 
+{
+    class Work 
+    {
+    public:
+        /** the types of work that can be performed over on the ruby
+         *  thread */
+        typedef enum {
+            /** load a service.  sarg contains the path to the 
+             *  service */
+            T_LoadService
+        } Type;
 
-    // given a path to a entry point ruby file, load the file and
-    // extract a description.
-    // on error, NULL is returned and a human readable error is returned
-    // in the oError output param
-    bp::service::Description *
-        loadRubyService(const std::string & pathToRubyFile,
-                        std::string & oError);
-    
+        Work(Type t);
+        ~Work();
+        
+        Type m_type;
+        std::string sarg;
 
-    // shutdown the ruby interpreter, freeing all possible resources.
-    void shutdown(void);
-}
+        // sync primitives to support synchronous work execution,
+        // when non-null, these primitives indicate that the work
+        // is to be performed synchronously and the caller will free
+        // the work memory
+        bp::sync::Mutex * m_syncLock;
+        bp::sync::Condition * m_syncCond;
+        // handle spurious wakeups (I love you, POSIX)
+        bool m_done;
+    };
+};
 
 #endif

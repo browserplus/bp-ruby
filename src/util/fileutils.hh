@@ -28,31 +28,19 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __RUBYINTERPRETER_HH__
-#define __RUBYINTERPRETER_HH__
-
-#include "ServiceAPI/bptypes.h"
-#include "bpservicedescription.hh"
+#ifndef __FILE_UTILS_HH__
+#define __FILE_UTILS_HH__
 
 #include <string>
 
-namespace ruby {
-    // intialize the ruby interpreter, given the path to this service.
-    // this will call all required initialization routines and
-    // will correctly populate load paths.
-    void initialize(const std::string & pathToRubyServiceDataDir);
+namespace file {
 
-    // given a path to a entry point ruby file, load the file and
-    // extract a description.
-    // on error, NULL is returned and a human readable error is returned
-    // in the oError output param
-    bp::service::Description *
-        loadRubyService(const std::string & pathToRubyFile,
-                        std::string & oError);
+    // read the contents of a file into a std::string
+    std::string readFile(const std::string & path);
+
+    // get the directory name of a path
+    std::string dirname(const std::string & path);
     
-
-    // shutdown the ruby interpreter, freeing all possible resources.
-    void shutdown(void);
-}
+};
 
 #endif

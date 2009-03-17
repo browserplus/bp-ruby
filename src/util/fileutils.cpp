@@ -28,31 +28,51 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __RUBYINTERPRETER_HH__
-#define __RUBYINTERPRETER_HH__
+#include "fileutils.hh"
 
-#include "ServiceAPI/bptypes.h"
-#include "bpservicedescription.hh"
+#include <fstream>
 
-#include <string>
+#ifdef WIN32
+#define PATHSEP		'\\'
+#define PATHPARENT	".."
+#else
+#define PATHSEP		'/'
+#define PATHPARENT	".."
+#endif
 
-namespace ruby {
-    // intialize the ruby interpreter, given the path to this service.
-    // this will call all required initialization routines and
-    // will correctly populate load paths.
-    void initialize(const std::string & pathToRubyServiceDataDir);
-
-    // given a path to a entry point ruby file, load the file and
-    // extract a description.
-    // on error, NULL is returned and a human readable error is returned
-    // in the oError output param
-    bp::service::Description *
-        loadRubyService(const std::string & pathToRubyFile,
-                        std::string & oError);
+// read the contents of a file into a std::string
+std::string file::readFile(const std::string & path)
+{
+    std::ifstream ifs;
     
+    // XXX: win32 i18n issues!  must convert path from UTF8 to wstring
 
-    // shutdown the ruby interpreter, freeing all possible resources.
-    void shutdown(void);
+    ifs.open(path.c_str(), std::ios::in);
+    if (!ifs.is_open()) return std::string();
+
+    std::string sOut;
+
+    // Optimization: Reduce likelihood of reallocations/copies.
+    const int knInitialCapacity = 2048;
+    sOut.reserve(knInitialCapacity);
+    
+    // See Meyers "Effective STL", Item 29.
+    copy(std::istreambuf_iterator<char>(ifs),
+         std::istreambuf_iterator<char>(),
+         back_inserter(sOut));
+
+    return sOut;
 }
 
-#endif
+
+// get the directory name of a path
+std::string file::dirname(const std::string & path)
+{
+    size_t i = path.rfind(PATHSEP);
+    if (i == std::string::npos) {
+        return ".";
+    } else if (i == path.length() - 1) {
+        return path;
+    }
+    return path.substr(0, i);
+}

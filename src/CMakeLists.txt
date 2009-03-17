@@ -47,7 +47,13 @@ SET(EXT_SRCS
   "${CPPTOOLS_DIR}/bpserviceversion.cpp"
 )
 
-SET(SRCS service.cpp RubyInterpreter.cpp)
+SET(SRCS
+  service.cpp
+  RubyInterpreter.cpp
+  RubyWork.cpp
+  RubyUtils.cpp
+  util/fileutils.cpp
+)
 
 # os specific srcs
 IF (WIN32)
