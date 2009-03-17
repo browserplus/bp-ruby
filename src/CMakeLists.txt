@@ -34,6 +34,7 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include/ruby-1.9.1"
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/bpsdk/include"
   "${CPPTOOLS_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
 LINK_DIRECTORIES(
@@ -45,9 +46,20 @@ SET(EXT_SRCS
   "${CPPTOOLS_DIR}/bpservicedescription.cpp"
   "${CPPTOOLS_DIR}/bpserviceversion.cpp"
 )
+
 SET(SRCS service.cpp RubyInterpreter.cpp)
+
+# os specific srcs
+IF (WIN32)
+   FILE(GLOB OS_SRCS "util/*_Windows.cpp")
+ELSE()
+   FILE(GLOB OS_SRCS "util/*_Darwin.cpp" "util/*_UNIX.cpp")
+ENDIF ()
+
+FILE(GLOB_RECURSE HDRS "*.hh")
+
 SET(HDRS RubyInterpreter.hh)
-ADD_LIBRARY(${serviceName} MODULE ${EXT_SRCS} ${SRCS} ${HDRS})
+ADD_LIBRARY(${serviceName} MODULE ${EXT_SRCS} ${OS_SRCS} ${SRCS} ${HDRS})
 
 TARGET_LINK_LIBRARIES(${serviceName} ruby-static)
 
