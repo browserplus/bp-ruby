@@ -29,16 +29,31 @@
  *
  */
 
-#include "RubyInterpreter.hh"
+#include "util/bpthread.hh"
+#include "util/bpsync.hh"
 
+#include "RubyInterpreter.hh"
 #include "i386-darwin9.6.0/ruby/config.h"
 #include "ruby.h"
+
+#include <iostream>
+
+#include <list>
 
 static char ** s_argv;
 static int s_argc = 1;
 
-void ruby::initialize(const std::string & path)
+// the thread upon which the ruby interpreter will run
+static bp::thread::Thread s_rubyThread;
+static bp::sync::Mutex s_rubyLock;
+static bp::sync::Condition s_rubyCond;
+static bool s_running = false;
+static std::list<int> s_workQueue;
+
+static void * rubyThreadFunc(void * ctx)
 {
+    std::string path((const char *) ctx);
+
     s_argv = (char **) calloc(2, sizeof(char *));
     s_argv[0] = "BrowserPlus Embedded Ruby";
     s_argv[1] = NULL;
@@ -55,11 +70,51 @@ void ruby::initialize(const std::string & path)
         std::string soPath = path + "/ext";        
         ruby_incpush(rbPath.c_str());
         ruby_incpush(soPath.c_str());
+
+        // let's release the spawning thread
+        s_rubyLock.lock();
+        s_running = true;
+        s_rubyCond.signal();
+
+        // now we'll block and wait for work
+        std::cout << "ruby thread is running" << std::endl;
+        
+        while (s_running) {
+            s_rubyCond.wait(&s_rubyLock);
+        }
+
+        // now we'll block and wait for work
+        std::cout << "ruby thread is exiting" << std::endl;
+        
+        s_rubyLock.unlock();
+
+        // XXX
+    }
+}
+
+
+void ruby::initialize(const std::string & path)
+{
+    if (!s_running) {
+        s_rubyLock.lock();
+        if (s_rubyThread.run(rubyThreadFunc, (void *) path.c_str())) {
+            while (!s_running) s_rubyCond.wait(&s_rubyLock);
+        }
+        s_rubyLock.unlock();        
     }
 }
 
 void ruby::shutdown(void)
 {
+    // stop the ruby thread!
+    if (s_running) {
+        s_rubyLock.lock();
+        s_running = false;
+        s_rubyCond.signal();        
+        s_rubyLock.unlock();
+        s_rubyThread.join();
+    }
+    
     (void) ruby_finalize();
 }
 
