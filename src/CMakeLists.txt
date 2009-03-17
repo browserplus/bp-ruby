@@ -107,6 +107,9 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${RM_CMD} \"${stdlibDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
                         \"${stdlibSource}\" \"${stdlibDest}\"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
+			\"${stdlibDest}\"
     COMMAND ${RM_CMD} \"${extDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
                         \"${extSource}\" \"${extDest}\"

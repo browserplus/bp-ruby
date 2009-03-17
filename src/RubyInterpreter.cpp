@@ -75,6 +75,10 @@ static void * rubyThreadFunc(void * ctx)
         ruby_incpush(rbPath.c_str());
         ruby_incpush(soPath.c_str());
 
+        // include "browserplus.rb" which cleans up the service authors
+        // definition semantics a bit
+        rb_require("browserplus.rb");
+
         // let's release the spawning thread
         s_rubyLock.lock();
         s_running = true;
@@ -112,8 +116,6 @@ static void * rubyThreadFunc(void * ctx)
                     // first lets update require path
                     std::string serviceDir = file::dirname(work->sarg);
                     ruby_incpush(serviceDir.c_str());
-                    std::cout << "updated ruby include path with dir: "
-                              << serviceDir << std::endl;
 
                     // read ruby source file
                     std::string source = file::readFile(work->sarg);
@@ -212,8 +214,6 @@ ruby::loadRubyService(const std::string & pathToRubyFile,
     work.sarg.append(pathToRubyFile);
     
     runWorkSync(&work);
-
-    
 
     return NULL;
 }
