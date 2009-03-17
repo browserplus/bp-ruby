@@ -1,0 +1,16 @@
+{
+  "type": "dependent",
+  "uses": {
+    "corelet": "RubyInterpreter",
+    "version": "5"
+  },
+  "arguments": {
+    "ScriptFile": "syntax_error.rb"
+  },
+  "strings": {
+    "en": {
+      "title": "A ruby service which is a great big syntax error",
+      "summary": "testing ruby's handling of syntax errors in services."
+    }
+  }
+}
