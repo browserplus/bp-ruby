@@ -1,0 +1,16 @@
+{
+  "type": "dependent",
+  "uses": {
+    "corelet": "RubyInterpreter",
+    "version": "5"
+  },
+  "arguments": {
+    "ScriptFile": "double_definition.rb"
+  },
+  "strings": {
+    "en": {
+      "title": "A ruby service which defines _two_ entry point classes, should break loudly",
+      "summary": "testing ruby's handling of semantic errors in services."
+    }
+  }
+}
