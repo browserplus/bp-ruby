@@ -87,8 +87,6 @@ static void * rubyThreadFunc(void * ctx)
         s_rubyLock.unlock();
 
         // now we'll block and wait for work
-        std::cout << "ruby thread is running" << std::endl;
-        
         while (s_running) {
             // pop an item off the queue and process it,
             // outside of the global data structure lock
@@ -128,6 +126,7 @@ static void * rubyThreadFunc(void * ctx)
                     } else {
                         int error = 0;
                         (void) rb_eval_string_protect(source.c_str(), &error);
+                        
                         if (error) {
                             work->m_error = true;
                             work->m_verboseError = ruby::getLastError();
@@ -160,8 +159,6 @@ static void * rubyThreadFunc(void * ctx)
         }
 
         // now we'll block and wait for work
-        std::cout << "ruby thread is exiting" << std::endl;
-        
         s_rubyLock.unlock();
 
         // XXX
