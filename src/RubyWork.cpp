@@ -37,7 +37,8 @@
 #include "RubyWork.hh"
 
 ruby::Work::Work(ruby::Work::Type t)
-    : m_type(t), m_syncLock(NULL), m_syncCond(NULL), m_done(false)
+    : m_type(t), m_error(false), m_desc(NULL), m_syncLock(NULL),
+      m_syncCond(NULL), m_done(false)
 {
 }
 

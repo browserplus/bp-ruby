@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 #
 # This beautiful work was originally concieved of by why the lucky stiff:
 # http://github.com/why/fakeplus/blob/master/stdlib/bp_hacks.rb

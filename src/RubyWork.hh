@@ -38,6 +38,8 @@
 
 #include "util/bpsync.hh"
 
+#include "bpservicedescription.hh"
+
 #include <string>
 
 namespace ruby 
@@ -58,6 +60,14 @@ namespace ruby
         
         Type m_type;
         std::string sarg;
+
+        // a means of returning errors from ruby interpreter thread
+        // for synchronous operations
+        bool m_error;
+        std::string m_verboseError;
+
+        // used during LoadService work to return a service description
+        bp::service::Description * m_desc;
 
         // sync primitives to support synchronous work execution,
         // when non-null, these primitives indicate that the work
