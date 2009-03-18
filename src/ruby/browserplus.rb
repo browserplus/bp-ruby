@@ -42,7 +42,7 @@ class Class
 
     m = (m/3).map do |bracket, arg, adoc|
       aname, atype = arg.split(/:\s*/, 2)
-      {'name' => aname, 'type' => atype, 'documentation' => adoc,
+      {'name' => aname, 'type' => atype, 'documentation' => adoc.chomp,
        'required' => bracket == "<"}
     end.compact
     [doc.strip, m]
