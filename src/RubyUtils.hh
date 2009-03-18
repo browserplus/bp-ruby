@@ -34,10 +34,17 @@
 
 #include <string>
 
+#include "i386-darwin9.6.0/ruby/config.h"
+#include "ruby.h"
+
 namespace ruby {
     /** get the last error encountered from the ruby evaluation environment */
     std::string getLastError();
-    
+
+    /** simplified invocation of a function upon a reciever while catching
+     *  errors */
+    VALUE invokeFunction(VALUE r, const char * funcName, int * error,
+                         int nargs, ...);
 };
 
 #endif

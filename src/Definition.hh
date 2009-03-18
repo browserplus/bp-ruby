@@ -26,58 +26,25 @@
  *  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  *  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
  */
 
-#include "RubyUtils.hh"
+/**
+ * code to extract a service definition from the ruby environment
+ * and to populate an in memory representation
+ */
 
-#include "i386-darwin9.6.0/ruby/config.h"
-#include "ruby.h"
+#ifndef __DEFINITION_HH__
+#define __DEFINITION_HH__
 
-std::string ruby::getLastError()
-{
-    VALUE lasterr = rb_gv_get("$!");
-    VALUE errMessage = rb_obj_as_string(lasterr);
-    return RSTRING_PTR(errMessage);
-}
+#include "bpservicedescription.hh"
+#include <string>
 
-#define MAX_ARGS 32
-
-typedef struct 
-{
-    VALUE receiver;
-    ID function;
-    int nargs;
-    VALUE args[MAX_ARGS];
-} FuncallArgs;
-
-static VALUE rb_funcall_proxy(VALUE arg)
-{
-    FuncallArgs * fa = (FuncallArgs *) arg;
-    return rb_funcall2(fa->receiver,
-                       fa->function,
-                       fa->nargs,
-                       fa->args);
-}
+namespace ruby {
     
-VALUE
-ruby::invokeFunction(VALUE r, const char * funcName, int * error,
-                     int nargs, ...)
-{
-    FuncallArgs fa;
-    
-    fa.receiver = r;
-    fa.function = rb_intern(funcName);
-    fa.nargs = nargs;
+/** crawl the current ruby context to translate a ruby corelet
+ *  definition into it's equivalent C structures */
+bp::service::Description * extractDefinition(std::string& verboseError);
 
-    *error = 0;
+};
 
-    va_list argh;
-    assert(nargs < MAX_ARGS);
-    
-    va_start(argh, nargs);
-    for (int i = 0; i < nargs; i++) fa.args[i] = va_arg(argh, VALUE);
-    va_end(argh);
-    
-    return rb_protect(rb_funcall_proxy, (VALUE) &fa, error);
-}
+#endif

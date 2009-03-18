@@ -36,6 +36,7 @@
 #include "RubyInterpreter.hh"
 #include "RubyWork.hh"
 #include "RubyUtils.hh"
+#include "Definition.hh"
 
 #include "i386-darwin9.6.0/ruby/config.h"
 #include "ruby.h"
@@ -131,16 +132,16 @@ static void * rubyThreadFunc(void * ctx)
                             work->m_error = true;
                             work->m_verboseError = ruby::getLastError();
                         } else {
-                            // how will we turn "d" into a
-                            // bp::ServiceDescription?
-                            // XXX:
                             // now it's time to pull out the global symbol
                             // $BrowserPlusEntryPointClass
                             // and call its to_service_description method
                             // and we'll get a ruby data structure we can
                             // traverse to discover the ruby interface
-                            
-                            
+                            work->m_desc =
+                                ruby::extractDefinition(work->m_verboseError);
+                            if (work->m_desc == NULL) {
+                                work->m_error = true;
+                            }
                         }
                     }
                 }

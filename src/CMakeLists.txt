@@ -53,6 +53,7 @@ SET(SRCS
   RubyWork.cpp
   RubyUtils.cpp
   util/fileutils.cpp
+  Definition.cpp
 )
 
 # os specific srcs
