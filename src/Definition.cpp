@@ -39,7 +39,6 @@
 #include "ruby.h"
 
 #include <sstream> 
-//#include <iostream> 
 
 #define BP_GLOBAL_DEF_SYM "$BrowserPlusEntryPointClass"
 #define BP_EXTERNAL_REP_METHOD "to_service_description"
@@ -299,8 +298,6 @@ ruby::extractDefinition(std::string& verboseError)
             }
         }
     }
-
-//    std::cout << desc->toHumanReadableString() << std::endl;
 
     return desc;
 }

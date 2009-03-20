@@ -65,25 +65,27 @@ BPPAllocate(void ** instance, unsigned int attachID,
             const BPElement * contextMap)
 {
     int rc = 0;
-
+    // XXX: write me!
     return rc;
 }
 
 void
 BPPDestroy(void * instance)
 {
-}
-
-void
-BPPShutdown(void)
-{
-    ruby::shutdown();
+    // XXX: write me!
 }
 
 void
 BPPInvoke(void * instance, const char * funcName,
           unsigned int tid, const BPElement * elem)
 {
+    // XXX: write me!
+}
+
+void
+BPPShutdown(void)
+{
+    ruby::shutdown();
 }
 
 // a description of this corelet.
@@ -94,6 +96,9 @@ BPCoreletDefinition s_rubyInterpreterDef = {
     0,
     NULL
 };
+
+// file scoped memory representation of the services interface.
+static bp::service::Description * s_desc = NULL;
 
 const BPCoreletDefinition *
 BPPAttach(unsigned int attachID, const BPElement * paramMap)
@@ -129,104 +134,22 @@ BPPAttach(unsigned int attachID, const BPElement * paramMap)
     path.append(((bp::Path *) params->get("ScriptFile"))->value());    
 
     std::string error;
-    bp::service::Description * d = ruby::loadRubyService(path, error);
+    s_desc = ruby::loadRubyService(path, error);
 
-    if (d == NULL) {
+    if (s_desc == NULL) {
         std::cerr << "error loading ruby service: " << error
                   << std::endl;
-    } else {
-        std::cout << "loaded ruby service: " << std::endl
-                  << d->toHumanReadableString();
-    }
-    
-/*
-    const BPCoreletDefinition * def = NULL;
-
-    // the name of the ruby script and path can be extracted from the
-    // parameter map 
-    bp::Object * obj = bp::Object::build(paramMap);
-
-    // first get the path
-    if (!obj->has("CoreletDirectory", BPTString)) {
-        delete obj;
-        return NULL;
-    }
-    std::string path;
-    path.append(((bp::Path *) obj->get("CoreletDirectory"))->value());
-
-    // now get the script name
-    if (!obj->has("Parameters", BPTMap)) {
-        delete obj;
         return NULL;
     }
 
-    bp::Map * params = (bp::Map *) obj->get("Parameters");
-    
-    if (!params->has("ScriptFile", BPTString)) {
-        delete obj;
-        return NULL;
-    }
-
-    bp::file::appendPath(path,
-                         ((bp::Path *) params->get("ScriptFile"))->value());
-
-    // see if we've already loaded this thing
-    RubyCorelet * rc = NULL;
-    
-    s_lock->lock();    
-    std::list<RubyCorelet *>::iterator i;
-    for (i = s_rubyCorelets.begin(); i != s_rubyCorelets.end(); i++) {
-        if (!((*i)->pathToRubyFile().compare(path))) {
-            // corelet already loaded
-            rc = *i;
-            def = rc->getDefinition();
-        }
-    }
-        
-    if (rc == NULL) {
-        rc = new RubyCorelet;        
-        def = rc->loadCoreletFile(path);
-        if (def == NULL) {
-            delete rc;
-            rc = NULL;
-        } else {
-            s_rubyCorelets.push_back(rc);            
-        }
-    }
-    
-    // now allocate a ruby corelet
-    if (rc != NULL) {
-        assert(def != NULL);
-        s_attachments[attachID] = rc;
-    }
-
-    s_lock->unlock();
-
-    return def;
-*/
-    return NULL;
+    return s_desc->toBPCoreletDefinition();
 }
 
 void
 BPPDetach(unsigned int attachID)
 {
-/*
-    // find and remove the attachment
-
-    // locking please!
-    s_lock->lock();
-    std::map<unsigned int, RubyCorelet *>::iterator it;
-    it = s_attachments.find(attachID);
-    if (it == s_attachments.end()) {
-        g_bpCoreFunctions->log(
-            BP_ERROR,
-            "(RubyInterpreter) BPDetach called with invalid attachment id: %u",
-            attachID);
-    } else {
-        s_attachments.erase(it);
-    }
-    s_lock->unlock();
-*/
+    if (s_desc) delete s_desc;
+    s_desc = NULL;
 }
 
 const BPCoreletDefinition *

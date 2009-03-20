@@ -231,5 +231,5 @@ ruby::loadRubyService(const std::string & pathToRubyFile,
         oError = work.m_verboseError;
     }
 
-    return NULL;
+    return work.m_desc; // if non-null, caller owns
 }
