@@ -29,15 +29,7 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-
-// header files from the BrowserPlus SDK
-#include "ServiceAPI/bpcfunctions.h"
-#include "ServiceAPI/bpdefinition.h"
-#include "ServiceAPI/bperror.h"
-#include "ServiceAPI/bppfunctions.h"
-#include "ServiceAPI/bptypes.h"
+#include "ServiceGlobals.hh"
 
 // header files from the bp-service-tools project, which makes it
 // easier to deal in types that one may transmit across the service
@@ -51,6 +43,9 @@
 #include <string>
 #include <iostream>
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #ifdef WIN32
 #define PATHSEP "\\"
 #else
@@ -59,27 +54,32 @@
 
 const BPCFunctionTable * g_bpCoreFunctions;
 
-
 int
-BPPAllocate(void ** instance, unsigned int attachID,
+BPPAllocate(void ** instance, unsigned int,
             const BPElement * contextMap)
 {
-    int rc = 0;
-    // XXX: write me!
-    return rc;
+    bp::Object * obj = bp::Object::build(contextMap);
+    *instance = ruby::allocateInstance(dynamic_cast<bp::Map *>(obj));
+    if (obj) delete obj;
+    // XXX failure case?
+    return 0;
 }
 
 void
 BPPDestroy(void * instance)
 {
-    // XXX: write me!
+    ruby::destroyInstance(instance);
 }
 
 void
 BPPInvoke(void * instance, const char * funcName,
           unsigned int tid, const BPElement * elem)
 {
-    // XXX: write me!
+    bp::Object * obj = bp::Object::build(elem);
+
+    ruby::invoke(instance, funcName, tid, dynamic_cast<bp::Map *>(obj));
+
+    if (obj) delete obj;
 }
 
 void

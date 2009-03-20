@@ -54,6 +54,8 @@ SET(SRCS
   RubyUtils.cpp
   util/fileutils.cpp
   Definition.cpp
+  DataMapping.cpp
+  BuiltIns.cpp
 )
 
 # os specific srcs

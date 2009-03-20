@@ -28,37 +28,19 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __RUBYINTERPRETER_HH__
-#define __RUBYINTERPRETER_HH__
+/**
+ * DataMapping.h - tools to map data back and forth from ruby's VALUE to
+ *                 bp::Object 
+ */
 
-#include "ServiceAPI/bptypes.h"
-#include "bpservicedescription.hh"
+#ifndef __DATAMAPPING_H__
+#define __DATAMAPPING_H__
 
-#include <string>
+#include "bptypeutil.hh"
 
-namespace ruby {
-    // intialize the ruby interpreter, given the path to this service.
-    // this will call all required initialization routines and
-    // will correctly populate load paths.
-    void initialize(const std::string & pathToRubyServiceDataDir);
+bp::Object * rubyToBPObject(unsigned long int /*VALUE*/ v);
 
-    // given a path to a entry point ruby file, load the file and
-    // extract a description.
-    // on error, NULL is returned and a human readable error is returned
-    // in the oError output param
-    bp::service::Description *
-        loadRubyService(const std::string & pathToRubyFile,
-                        std::string & oError);
-    
-    void * allocateInstance(const bp::Map * context);
-
-    void invoke(void * instance, const char * funcName,
-                unsigned int tid, bp::Map * arguments);
-
-    void destroyInstance(void * instance);
-
-    // shutdown the ruby interpreter, freeing all possible resources.
-    void shutdown(void);
-}
+unsigned long int /*VALUE*/ bpObjectToRuby(const bp::Object * obj,
+                                           unsigned int tid);
 
 #endif

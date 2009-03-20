@@ -40,6 +40,9 @@
 
 #include "bpservicedescription.hh"
 
+#include "i386-darwin9.6.0/ruby/config.h"
+#include "ruby.h"
+
 #include <string>
 
 namespace ruby 
@@ -52,7 +55,9 @@ namespace ruby
         typedef enum {
             /** load a service.  sarg contains the path to the 
              *  service */
-            T_LoadService
+            T_LoadService,
+            /** Allocate an instance of a service */
+            T_AllocateInstance
         } Type;
 
         Work(Type t);
@@ -68,6 +73,12 @@ namespace ruby
 
         // used during LoadService work to return a service description
         bp::service::Description * m_desc;
+
+        // a means of getting data back and forth
+        const bp::Object * m_obj;
+
+        // how the instance object is passed back and forth
+        VALUE m_instance;
 
         // sync primitives to support synchronous work execution,
         // when non-null, these primitives indicate that the work

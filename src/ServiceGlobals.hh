@@ -28,37 +28,17 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __RUBYINTERPRETER_HH__
-#define __RUBYINTERPRETER_HH__
+#ifndef __CORELETGLOBALS_H__
+#define __CORELETGLOBALS_H__
 
-#include "ServiceAPI/bptypes.h"
-#include "bpservicedescription.hh"
+// header files from the BrowserPlus SDK
+#include <ServiceAPI/bperror.h>
+#include <ServiceAPI/bptypes.h>
+#include <ServiceAPI/bpdefinition.h>
+#include <ServiceAPI/bpcfunctions.h>
+#include <ServiceAPI/bppfunctions.h>
 
-#include <string>
-
-namespace ruby {
-    // intialize the ruby interpreter, given the path to this service.
-    // this will call all required initialization routines and
-    // will correctly populate load paths.
-    void initialize(const std::string & pathToRubyServiceDataDir);
-
-    // given a path to a entry point ruby file, load the file and
-    // extract a description.
-    // on error, NULL is returned and a human readable error is returned
-    // in the oError output param
-    bp::service::Description *
-        loadRubyService(const std::string & pathToRubyFile,
-                        std::string & oError);
-    
-    void * allocateInstance(const bp::Map * context);
-
-    void invoke(void * instance, const char * funcName,
-                unsigned int tid, bp::Map * arguments);
-
-    void destroyInstance(void * instance);
-
-    // shutdown the ruby interpreter, freeing all possible resources.
-    void shutdown(void);
-}
+// pointer to table of functions which will call back into browserplus
+extern const BPCFunctionTable * g_bpCoreFunctions;
 
 #endif

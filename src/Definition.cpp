@@ -39,8 +39,7 @@
 #include "ruby.h"
 
 #include <sstream> 
-
-#define BP_GLOBAL_DEF_SYM "$BrowserPlusEntryPointClass"
+const char * ruby::BP_GLOBAL_DEF_SYM = "$BrowserPlusEntryPointClass";
 #define BP_EXTERNAL_REP_METHOD "to_service_description"
 
 bool extractString(VALUE hash, const char * key, std::string & where)
@@ -213,8 +212,9 @@ ruby::extractDefinition(std::string& verboseError)
         if (rb_type(gv) != T_CLASS)
         {
             verboseError.append("ruby service lacks entry point class, "
-                                "cannot find " BP_GLOBAL_DEF_SYM
-                                ", is bp_doc properly called?");
+                                "cannot find ");
+            verboseError.append(BP_GLOBAL_DEF_SYM);
+            verboseError.append(", is bp_doc properly called?");
             return NULL;
         }
         int error = 0;

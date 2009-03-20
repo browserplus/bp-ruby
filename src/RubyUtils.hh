@@ -45,6 +45,36 @@ namespace ruby {
      *  errors */
     VALUE invokeFunction(VALUE r, const char * funcName, int * error,
                          int nargs, ...);
+
+    // This little class is taken from
+    // http://metaeditor.sourceforge.net/embed/
+    // The idea is simple, we need anonymous values returned from
+    // ruby to have a non zero reference count so that they are not
+    // garbage collected.  One option is to interact with the rb_gc_* code
+    // directly.  This option is better, cause it's faster and simpler.
+    // We allocate an array on the stack, and add elements to this array,
+    // because the array is marked, those items will not be garbage collected
+    // as long as they're in the array.
+    class GCArray {
+    public:
+        GCArray() {
+            objects = rb_ary_new();
+            rb_gc_register_address(&objects);
+        }
+        ~GCArray() {
+            // dispose array and flush all elements
+            rb_gc_unregister_address(&objects);
+        }
+        void Register(VALUE object) {
+            rb_ary_push(objects, object);
+        }
+        void Unregister(VALUE object) {
+            rb_ary_delete(objects, object);
+        }
+    private:
+        VALUE objects;
+    };
+
 };
 
 #endif

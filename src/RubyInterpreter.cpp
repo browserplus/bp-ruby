@@ -37,6 +37,7 @@
 #include "RubyWork.hh"
 #include "RubyUtils.hh"
 #include "Definition.hh"
+#include "DataMapping.hh"
 
 #include "i386-darwin9.6.0/ruby/config.h"
 #include "ruby.h"
@@ -85,6 +86,10 @@ static void * rubyThreadFunc(void * ctx)
         s_running = true;
         s_rubyCond.signal();
         s_rubyLock.unlock();
+
+        // allocate a stack based container for managing anonymous
+        // object lifetime
+        ruby::GCArray gcArray;
 
         // now we'll block and wait for work
         while (s_running) {
@@ -142,6 +147,23 @@ static void * rubyThreadFunc(void * ctx)
                                 work->m_error = true;
                             }
                         }
+                    }
+                }
+                else if (work->m_type == ruby::Work::T_AllocateInstance)
+                {
+                    int error = 0;
+                    VALUE klass = rb_gv_get(ruby::BP_GLOBAL_DEF_SYM);
+                    // XXX: initialize args!
+                    VALUE initArgs = bpObjectToRuby(work->m_obj, 0);
+                    work->m_instance =
+                        ruby::invokeFunction(klass, "new", &error, 1,
+                                             initArgs);
+
+                    if (error) {
+                        work->m_error = true;
+                        work->m_verboseError = ruby::getLastError();
+                    } else {
+                        gcArray.Register(work->m_instance);
                     }
                 }
 
@@ -232,4 +254,36 @@ ruby::loadRubyService(const std::string & pathToRubyFile,
     }
 
     return work.m_desc; // if non-null, caller owns
+}
+
+void *
+ruby::allocateInstance(const bp::Map * context)
+{
+    ruby::Work work(ruby::Work::T_AllocateInstance);
+    work.m_obj = context;
+    
+    runWorkSync(&work);
+
+    if (work.m_error) {
+        std::cerr << "failed to allocate instance: "
+                  << work.m_verboseError << std::endl;
+        return NULL;
+    }
+
+    return (void *) work.m_instance; // if non-null, caller owns
+}
+
+
+void
+ruby::invoke(void * instance, const char * funcName,
+             unsigned int tid, bp::Map * arguments)
+{
+    // XXX: implement me
+}
+
+
+void
+ruby::destroyInstance(void * instance)
+{
+    // XXX: implement me
 }

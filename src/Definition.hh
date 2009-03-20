@@ -40,10 +40,12 @@
 #include <string>
 
 namespace ruby {
+
+    extern const char * BP_GLOBAL_DEF_SYM;
     
-/** crawl the current ruby context to translate a ruby corelet
- *  definition into it's equivalent C structures */
-bp::service::Description * extractDefinition(std::string& verboseError);
+    /** crawl the current ruby context to translate a ruby corelet
+     *  definition into it's equivalent C structures */
+    bp::service::Description * extractDefinition(std::string& verboseError);
 
 };
 
