@@ -1,0 +1,8 @@
+1. handle missing arguments to init function
+2. implement function invocation
+3. add tests to excercise built-in extensions
+   (verify we're correctly populating stdlib)
+4. trim ruby distribution a bit
+5. win32 port
+6. implement test of native extensions shipped with ruby services
+7. integrate robust proxy support
