@@ -142,7 +142,6 @@ static bool processFunction(VALUE hash, bp::service::Description * desc,
         verboseError.append("'name' missing from function definition");
         return false;
     }
-
     f.setName(s.c_str());
 
     if (!extractString(hash, "documentation", s)) {
@@ -151,6 +150,7 @@ static bool processFunction(VALUE hash, bp::service::Description * desc,
         verboseError.append(" function definition");
         return false;
     }
+    f.setDocString(s.c_str());
 
     // now process the arguments
     {
@@ -182,7 +182,7 @@ static bool processFunction(VALUE hash, bp::service::Description * desc,
     }
 
     // XXX: need "addFunction"
-    std::list<bp::service::Function> l;
+    std::list<bp::service::Function> l = desc->functions();
     l.push_back(f);
     desc->setFunctions(l);
 

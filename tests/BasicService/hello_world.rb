@@ -26,7 +26,7 @@ class HelloWorld
                   [cb: callback] a callback to invoke"
 
   def syntax(trans, args)
-    bad syntax
+    foo
   end
 
   bp_doc :syntax, "A function which takes no args and has a syntax error"
