@@ -182,7 +182,7 @@ static bool processFunction(VALUE hash, bp::service::Description * desc,
     }
 
     // XXX: need "addFunction"
-    std::list<bp::service::Function> l = desc->functions();
+    std::list<bp::service::Function> l(desc->functions());
     l.push_back(f);
     desc->setFunctions(l);
 

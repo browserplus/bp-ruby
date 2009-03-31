@@ -215,6 +215,15 @@ static void * rubyThreadFunc(void * ctx)
                         delete work->m_obj;
                         work->m_obj = NULL;
                     }
+                } else if (work->m_type == ruby::Work::T_ReleaseInstance) {
+                    if (rb_method_boundp(CLASS_OF(work->m_instance),
+                                         rb_intern("destroy"), 1))
+                    {
+                        (void) ruby::invokeFunction(work->m_instance,
+                                                    "destroy", &error, 0);
+                    }
+                    
+                    gcArray.Unregister(work->m_instance);
                 }
 
                 // presence of syncLock indicates synchronous operation
@@ -229,6 +238,7 @@ static void * rubyThreadFunc(void * ctx)
                 }
             }
         }
+        
 
         // now we'll block and wait for work
         s_rubyLock.unlock();
@@ -345,5 +355,7 @@ ruby::invoke(void * instance, const char * funcName,
 void
 ruby::destroyInstance(void * instance)
 {
-    // XXX: implement me
+    ruby::Work work(ruby::Work::T_ReleaseInstance);
+    work.m_instance = (VALUE) instance;
+    runWorkSync(&work);
 }

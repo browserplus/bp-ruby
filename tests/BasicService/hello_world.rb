@@ -30,4 +30,8 @@ class HelloWorld
   end
 
   bp_doc :syntax, "A function which takes no args and has a syntax error"
+
+  def destroy
+    puts "destroy called!  thanks for calling my destructor, BrowserPlus"
+  end
 end

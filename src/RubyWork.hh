@@ -59,7 +59,9 @@ namespace ruby
             /** Allocate an instance of a service */
             T_AllocateInstance,
             /** Invoke a method on the ruby instance */
-            T_InvokeMethod
+            T_InvokeMethod,
+            /** Explicitly release and destroy a service */
+            T_ReleaseInstance
         } Type;
 
         Work(Type t);

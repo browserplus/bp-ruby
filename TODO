@@ -4,6 +4,4 @@
 3. win32 port
 4. implement test of native extensions shipped with ruby services
 5. integrate robust proxy support
-6. implement "destructors" - and optional "destroy" method should be
-   invoked when a service instance is released
 
