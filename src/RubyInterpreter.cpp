@@ -38,6 +38,8 @@
 #include "RubyUtils.hh"
 #include "Definition.hh"
 #include "DataMapping.hh"
+#include "Builtins.hh"
+#include "ServiceGlobals.hh"
 
 #include "i386-darwin9.6.0/ruby/config.h"
 #include "ruby.h"
@@ -76,6 +78,8 @@ static void * rubyThreadFunc(void * ctx)
         std::string soPath = path + "/ext";        
         ruby_incpush(rbPath.c_str());
         ruby_incpush(soPath.c_str());
+
+        bp_load_builtins();
 
         // include "browserplus.rb" which cleans up the service authors
         // definition semantics a bit
@@ -183,6 +187,33 @@ static void * rubyThreadFunc(void * ctx)
                         work->m_verboseError = ruby::getLastError();
                     } else {
                         gcArray.Register(work->m_instance);
+                    }
+                }
+                else if (work->m_type == ruby::Work::T_InvokeMethod)
+                {
+                    int error = 0;
+                    VALUE tid = rb_uint_new(work->m_tid);
+                    VALUE trans = rb_class_new_instance(1, &tid,
+                                                        bp_rb_cTransaction);
+
+                    g_bpCoreFunctions->log(
+                        BP_DEBUG, "executing func '%s'",
+                        work->sarg.c_str());
+
+                    ruby::invokeFunction(
+                        work->m_instance, work->sarg.c_str(),
+                        &error, 2, trans,
+                        bpObjectToRuby(work->m_obj, work->m_tid));
+
+                    if (error) {
+                        g_bpCoreFunctions->postError(
+                            work->m_tid, "ruby.evalError",
+                            ruby::getLastError().c_str());
+                    }
+
+                    if (work->m_obj) {
+                        delete work->m_obj;
+                        work->m_obj = NULL;
                     }
                 }
 
@@ -297,7 +328,17 @@ void
 ruby::invoke(void * instance, const char * funcName,
              unsigned int tid, bp::Map * arguments)
 {
-    // XXX: implement me
+    // set up a dynamically allocated structure with information about
+    // the method invocation
+    ruby::Work * work = new ruby::Work(ruby::Work::T_InvokeMethod);
+    work->m_instance = (VALUE) instance;
+    work->sarg.append(funcName);
+    work->m_tid = tid;
+    if (arguments) { work->m_obj = arguments->clone(); }
+    else work->m_obj = NULL;
+    
+    // asynchronously run this work, not waiting around for the results
+    runWorkASync(work);
 }
 
 

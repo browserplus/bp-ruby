@@ -61,6 +61,8 @@ BPPAllocate(void ** instance, unsigned int,
     bp::Object * obj = bp::Object::build(contextMap);
     *instance = ruby::allocateInstance(dynamic_cast<bp::Map *>(obj));
     if (obj) delete obj;
+    std::cout << "BPPAllocate: " << *instance << std::endl;
+
     // XXX failure case?
     return 0;
 }
@@ -68,6 +70,7 @@ BPPAllocate(void ** instance, unsigned int,
 void
 BPPDestroy(void * instance)
 {
+    std::cout << "BPPDestroy: " << instance << std::endl;
     ruby::destroyInstance(instance);
 }
 
@@ -76,15 +79,14 @@ BPPInvoke(void * instance, const char * funcName,
           unsigned int tid, const BPElement * elem)
 {
     bp::Object * obj = bp::Object::build(elem);
-
     ruby::invoke(instance, funcName, tid, dynamic_cast<bp::Map *>(obj));
-
     if (obj) delete obj;
 }
 
 void
 BPPShutdown(void)
 {
+    std::cout << "BPPShutdown" << std::endl;
     ruby::shutdown();
 }
 

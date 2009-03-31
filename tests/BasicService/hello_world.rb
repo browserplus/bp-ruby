@@ -24,4 +24,10 @@ class HelloWorld
   bp_doc :hello, "return the string, 'hello world'.  original, eh?
                   <who: string> who to say hello to.
                   [cb: callback] a callback to invoke"
+
+  def syntax(trans, args)
+    bad syntax
+  end
+
+  bp_doc :syntax, "A function which takes no args and has a syntax error"
 end

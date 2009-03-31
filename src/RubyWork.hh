@@ -57,7 +57,9 @@ namespace ruby
              *  service */
             T_LoadService,
             /** Allocate an instance of a service */
-            T_AllocateInstance
+            T_AllocateInstance,
+            /** Invoke a method on the ruby instance */
+            T_InvokeMethod
         } Type;
 
         Work(Type t);
@@ -79,6 +81,9 @@ namespace ruby
 
         // how the instance object is passed back and forth
         VALUE m_instance;
+
+        // A transaction id, used in method invocation
+        unsigned int m_tid;
 
         // sync primitives to support synchronous work execution,
         // when non-null, these primitives indicate that the work
