@@ -1,7 +1,9 @@
-1. implement function invocation
-2. add tests to excercise built-in extensions
+1. add tests to excercise built-in extensions
    (verify we're correctly populating stdlib)
-3. trim ruby distribution a bit
-4. win32 port
-5. implement test of native extensions shipped with ruby services
-6. integrate robust proxy support
+2. trim ruby distribution a bit
+3. win32 port
+4. implement test of native extensions shipped with ruby services
+5. integrate robust proxy support
+6. implement "destructors" - and optional "destroy" method should be
+   invoked when a service instance is released
+
