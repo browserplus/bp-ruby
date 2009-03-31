@@ -153,10 +153,29 @@ static void * rubyThreadFunc(void * ctx)
                 {
                     int error = 0;
                     VALUE klass = rb_gv_get(ruby::BP_GLOBAL_DEF_SYM);
-                    // XXX: initialize args!
+
+                    // initialize arguments
                     VALUE initArgs = bpObjectToRuby(work->m_obj, 0);
+                    int takesArg = 0;
+                    ID initialize = rb_intern("initialize");
+                    if (rb_method_boundp(klass, initialize, 0))
+                    {
+                        VALUE initMeth = 
+                            ruby::invokeFunction(
+                                klass, "instance_method", &error,
+                                1, ID2SYM(initialize));
+
+                        if (initMeth) {
+                            VALUE arity = ruby::invokeFunction(
+                                initMeth, "arity", &error, 0);
+                            if (NUM2INT(arity) >= 1) {
+                                takesArg = 1;
+                            }
+                        }
+                    }
+                    
                     work->m_instance =
-                        ruby::invokeFunction(klass, "new", &error, 1,
+                        ruby::invokeFunction(klass, "new", &error, takesArg,
                                              initArgs);
 
                     if (error) {
