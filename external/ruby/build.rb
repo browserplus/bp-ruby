@@ -7,10 +7,10 @@ require 'open-uri'
 require 'digest'
 include Config
 
-$pkg="ruby-1.9.1-p0"
-$md5="0278610ec3f895ece688de703d99143e"
+$pkg="ruby-1.9.1-p129"
+$md5="6fa62b20f72da471195830dec4eb2013"
 $tarball = "#{$pkg}.tar.bz2"
-$url="ftp://ftp.ruby-lang.org/pub/ruby/1.9/#{$tarball}"
+$url="http://ftp.ruby-lang.org/pub/ruby/#{$tarball}"
 
 if CONFIG['arch'] =~ /mswin/
     $platform = "Windows"
