@@ -106,10 +106,11 @@ else
     ENV['LDFLAGS'] = '-isysroot /Developer/SDKs/MacOSX10.4u.sdk'
 
     # now configure...
-    system("./configure --prefix=#{buildDir} ")
+    system("./configure --prefix=#{buildDir} --enable-shared --disable-install-doc")
 
     # make & install locally (see configure --prefix arg)
     system("make")
     system("make install")
+    system("strip -x #{buildDir}/lib/*.dylib")
   end
 end
