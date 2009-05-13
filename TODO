@@ -1,7 +1,4 @@
-1. add tests to excercise built-in extensions
-   (verify we're correctly populating stdlib)
-2. trim ruby distribution a bit
-3. win32 port
-4. implement test of native extensions shipped with ruby services
-5. integrate robust proxy support
-
+1. trim ruby distribution a bit
+2. win32 port
+3. implement test of native extensions shipped with ruby services
+4. integrate robust proxy support
