@@ -38,7 +38,7 @@ h3. Build & Test Prerequisites:
 After Checkout you must init submodules:
 $ git submodule init
 
-On OSX here's how to get started:
+h4. Building on OSX 
 
 # git submodule init
 # cd external/ruby && ./build.rb (this will download and build an embeddable ruby)
@@ -53,6 +53,10 @@ To run the interpreter with a sample service
 </pre>
 
 Now you'll be in a command shell where you can interact with the loaded ruby service
+
+h4. Building and running on Win32
+
+XXX
 
 License:
 
