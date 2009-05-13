@@ -17,6 +17,9 @@ PROJECT(${serviceName}Service)
 
 SET (outputDir "${CMAKE_CURRENT_BINARY_DIR}/${serviceName}")
 
+SET (rubyLibPath
+     "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib")
+
 # looser syntax (that's my patch!)
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
@@ -37,9 +40,7 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-LINK_DIRECTORIES(
-  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib"
-)
+LINK_DIRECTORIES(${rubyLibPath})
 
 SET(EXT_SRCS
   "${CPPTOOLS_DIR}/bptypeutil.cpp"
@@ -70,22 +71,20 @@ FILE(GLOB_RECURSE HDRS "*.hh")
 SET(HDRS RubyInterpreter.hh)
 ADD_LIBRARY(${serviceName} MODULE ${EXT_SRCS} ${OS_SRCS} ${SRCS} ${HDRS})
 
-TARGET_LINK_LIBRARIES(${serviceName} ruby-static)
+# find the path to the ruby library we'll link
+FIND_LIBRARY(rubyDylib NAMES ruby
+             PATHS ${rubyLibPath}
+             NO_DEFAULT_PATH
+             NO_SYSTEM_ENVIRONMENT_PATH)
+
+TARGET_LINK_LIBRARIES(${serviceName} ${rubyDylib})
 
 # create service directory
 FILE(MAKE_DIRECTORY ${outputDir})
 
-# copy in manifest
-GET_TARGET_PROPERTY(loc ${serviceName} LOCATION)
-GET_FILENAME_COMPONENT(ServiceLibrary "${loc}" NAME)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/manifest.json"
-               "${outputDir}/manifest.json")  
-ADD_CUSTOM_COMMAND(TARGET ${serviceName} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                           \"${loc}\" \"${outputDir}\")
 IF (APPLE)
-  ADD_CUSTOM_COMMAND(TARGET ${serviceName} POST_BUILD
-                     COMMAND strip -x \"${outputDir}/${ServiceLibrary}\")
+#  ADD_CUSTOM_COMMAND(TARGET ${serviceName} POST_BUILD
+#                     COMMAND strip -x \"${outputDir}/${ServiceLibrary}\")
 ENDIF (APPLE)
 
 SET(stdlibDest "${outputDir}/stdlib")
@@ -104,6 +103,12 @@ ELSE ()
     SET(RM_CMD "del /f /q")
 ENDIF ()
 
+GET_FILENAME_COMPONENT( rubyDylibName ${rubyDylib} NAME )
+
+# get location of output service library
+GET_TARGET_PROPERTY(loc ${serviceName} LOCATION)
+
+MESSAGE("ruby library: ${rubyDylib}" )
 
 ADD_CUSTOM_COMMAND(
     TARGET ${serviceName} POST_BUILD
@@ -119,4 +124,16 @@ ADD_CUSTOM_COMMAND(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
             \"${outputDir}\"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            \"${rubyDylib}\"
+            \"${outputDir}\"
+    COMMAND install_name_tool -change \"${rubyDylib}\" \"@loader_path/${rubyDylibName}\" ${loc}
 )
+
+# copy in manifest
+GET_FILENAME_COMPONENT(ServiceLibrary "${loc}" NAME)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/manifest.json"
+               "${outputDir}/manifest.json")  
+ADD_CUSTOM_COMMAND(TARGET ${serviceName} POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                           \"${loc}\" \"${outputDir}\")
