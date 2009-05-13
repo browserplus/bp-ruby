@@ -1,0 +1,16 @@
+{
+  "type": "dependent",
+  "uses": {
+    "corelet": "RubyInterpreter",
+    "version": "5"
+  },
+  "arguments": {
+    "ScriptFile": "hello_world.rb"
+  },
+  "strings": {
+    "en": {
+      "title": "Hello World Service",
+      "summary": "the simplest of simple."
+    }
+  }
+}
