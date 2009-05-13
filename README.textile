@@ -29,16 +29,18 @@ and then can build the BrowserPlus service.  Using the BrowserPlus SDK
 you can run Ruby services from the command line, or install the service
 locally and interact with them from the web.
 
-h3. Build & Test Prerequisites:
+h3. Build & Test Prerequisites
 
 * a recent version of ruby installed on your machine
 * cmake, version 2.6 or greater (see http://cmake.org)
 * a recent version of the BrowserPlus SDK (http://browserplus.yahoo.com/developer/service/sdk/)
 
 After Checkout you must init submodules:
+<pre>
 $ git submodule init
+</pre>
 
-h4. Building on OSX 
+h4. Building & running on OSX 
 
 # git submodule init
 # cd external/ruby && ./build.rb (this will download and build an embeddable ruby)
@@ -49,12 +51,12 @@ h4. Building on OSX
 
 To run the interpreter with a sample service
 <pre>
-<path_to_bpsdk>/bin/ServiceRunner -providerPath src/build/RubyInterpreter test/HelloWorld
+&lt;path_to_bpsdk&gt;/bin/ServiceRunner -providerPath src/build/RubyInterpreter test/HelloWorld
 </pre>
 
 Now you'll be in a command shell where you can interact with the loaded ruby service
 
-h4. Building and running on Win32
+h4. Building & running on Win32
 
 XXX
 
