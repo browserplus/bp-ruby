@@ -1,0 +1,62 @@
+h2. Overview
+
+This will be the home of the next iteration of the BrowserPlus "RubyInterpreter" service:  http://browserplus.yahoo.com/developer/services/?s=RubyInterpreter
+
+This implementation will leverage the upcoming process separation in BrowserPlus 2.2.0 to address some community requests, namely:
+
+# bp_require is silly, we should be able to require()
+# dependent services should be able to include native extensions
+# performance improvements (seek help to solve the "select problem")
+# upgrade to ruby 1.9.1 stable (better i18n support, etc, etc)
+# more built in extensions to the ruby environment
+  (including the ability to use other services from a ruby service)
+# ability to ship byte compiled ruby for obfuscation
+   (closed source code sucks, more for obfuscating api keys, and faster
+    load times)
+# include why the lucky stiff's (in spirit at least) simplifications
+   to writing ruby services
+
+h3. Current State:
+
+just gettin' started, focusing on mac first and porting over 
+relavant bits of the old ruby interpreter.
+
+h3. Build Notes:
+
+external/ is where all external dependencies ruby will be
+fetched, patched, and built.  You must first build external dependencies,
+and then can build the BrowserPlus service.  Using the BrowserPlus SDK
+you can run Ruby services from the command line, or install the service
+locally and interact with them from the web.
+
+h3. Build & Test Prerequisites:
+
+* a recent version of ruby installed on your machine
+* cmake, version 2.6 or greater (see http://cmake.org)
+* a recent version of the BrowserPlus SDK (http://browserplus.yahoo.com/developer/service/sdk/)
+
+After Checkout you must init submodules:
+$ git submodule init
+
+On OSX here's how to get started:
+
+# git submodule init
+# cd external/ruby && ./build.rb (this will download and build an embeddable ruby)
+# cd src
+# mkdir build
+# cmake ..
+# make
+
+To run the interpreter with a sample service
+<pre>
+<path_to_bpsdk>/bin/ServiceRunner -providerPath src/build/RubyInterpreter test/HelloWorld
+</pre>
+
+Now you'll be in a command shell where you can interact with the loaded ruby service
+
+License:
+
+see COPYING for information on licensing
+
+stay tuned,
+lloyd
