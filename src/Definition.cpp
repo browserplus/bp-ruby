@@ -35,7 +35,7 @@
 #include "Definition.hh"
 #include "RubyUtils.hh"
 
-#include "i386-darwin9.6.0/ruby/config.h"
+#include "ruby/config.h"
 #include "ruby.h"
 
 #include <sstream> 

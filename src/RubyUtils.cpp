@@ -31,7 +31,7 @@
 
 #include "RubyUtils.hh"
 
-#include "i386-darwin9.6.0/ruby/config.h"
+#include "ruby/config.h"
 #include "ruby.h"
 
 std::string ruby::getLastError()

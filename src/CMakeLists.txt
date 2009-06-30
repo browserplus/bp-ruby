@@ -20,6 +20,30 @@ SET (outputDir "${CMAKE_CURRENT_BINARY_DIR}/${serviceName}")
 SET (rubyLibPath
      "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib")
 
+# build up the "platform identifier"
+IF (APPLE)
+   execute_process(COMMAND uname -p
+                   OUTPUT_VARIABLE arch
+                   ERROR_QUIET
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+   execute_process(COMMAND uname -r
+                   OUTPUT_VARIABLE ver
+                   ERROR_QUIET
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+   execute_process(COMMAND uname -s
+                   OUTPUT_VARIABLE sysUpper
+                   ERROR_QUIET
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+   string(TOLOWER ${sysUpper} sys) 
+
+   SET( platIdent "${arch}-${sys}${ver}" )
+
+   MESSAGE("platform: ${platIdent}")
+ENDIF ()
+
 # looser syntax (that's my patch!)
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
@@ -34,6 +58,7 @@ SET(CPPTOOLS_DIR
 )
 
 INCLUDE_DIRECTORIES(
+  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include/ruby-1.9.1/${platIdent}"
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include/ruby-1.9.1"
   "${CMAKE_CURRENT_SOURCE_DIR}/../external/bpsdk/include"
   "${CPPTOOLS_DIR}"

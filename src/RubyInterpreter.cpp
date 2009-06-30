@@ -41,7 +41,7 @@
 #include "Builtins.hh"
 #include "ServiceGlobals.hh"
 
-#include "i386-darwin9.6.0/ruby/config.h"
+#include "ruby/config.h"
 #include "ruby.h"
 
 #include <iostream>
