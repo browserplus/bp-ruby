@@ -38,11 +38,13 @@ h3. Build & Test Prerequisites
 After Checkout you must init submodules:
 <pre>
 $ git submodule init
+$ git submodule update
 </pre>
 
 h4. Building & running on OSX 
 
 # git submodule init
+# git submodule update
 # cd external/ruby && ./build.rb (this will download and build an embeddable ruby)
 # cd src
 # mkdir build
