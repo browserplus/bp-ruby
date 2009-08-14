@@ -91,10 +91,9 @@ end
 # unpack the bugger
 puts "***** unpacking tarball..."
 if $platform == "Windows"
-  throw "oopsie, implement me please"
-#    system("#{topDir}\\..\\Windows\\bin\\7z.exe x #{tarball}")
-#    system("#{topDir}\\..\\Windows\\bin\\7z.exe x #{pkg}.tar")
-#    FileUtils.rm_f("#{pkg}.tar")
+  system("#{topDir}\\..\\WinTools\\7z.exe x #{$tarball}")
+  system("#{topDir}\\..\\WinTools\\7z.exe x #{$pkg}.tar")
+  FileUtils.rm_f("#{$pkg}.tar")
 else
   system("tar xjf #{$tarball}")
 end
@@ -105,16 +104,14 @@ Dir.chdir(pkgDir) do
   $patches.each { |p| system("patch -p1 < ../#{p}") }
 end
 
-if $platform == "Windows"
-  throw "oopsie, implement me please"
-#    system("#{topDir}\\..\\Windows\\bin\\7z.exe x #{tarball}")
-#    system("#{topDir}\\..\\Windows\\bin\\7z.exe x #{pkg}.tar")
-#    FileUtils.rm_f("#{pkg}.tar")
-else
-  # configure & build
-  Dir.chdir(pkgDir) do 
-    puts "***** configuring ruby..."
+Dir.chdir(pkgDir) do 
 
+  # configure & build
+  puts "***** configuring ruby..."
+  if $platform == "Windows"
+    ENV['RUNTIMEFLAG'] = '-MT'
+    system("win32\\configure.bat --prefix=#{buildDir} --disable-install-doc")
+  else
     # we want these bits to work on tiger and leopard regardless of
     # where they're 
     ENV['CFLAGS'] = '-mmacosx-version-min=10.4 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386'
@@ -124,9 +121,13 @@ else
 
     # now configure...
     system("./configure --prefix=#{buildDir} --enable-shared --disable-install-doc")
+  end 
 
-    # make & install locally (see configure --prefix arg)
-    puts "***** building ruby..."
+  # make & install locally (see configure --prefix arg)
+  puts "***** building ruby..."
+  if $platform == "Windows"
+    system("nmake")
+  else
     system("make")
     system("make install")
     system("strip -x #{buildDir}/lib/*.dylib")
