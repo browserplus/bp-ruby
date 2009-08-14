@@ -38,7 +38,7 @@
 #include "RubyUtils.hh"
 #include "Definition.hh"
 #include "DataMapping.hh"
-#include "Builtins.hh"
+#include "BuiltIns.hh"
 #include "ServiceGlobals.hh"
 
 #include "ruby/config.h"
