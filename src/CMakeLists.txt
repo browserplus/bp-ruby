@@ -8,7 +8,7 @@
 # I'm a modern man
 cmake_minimum_required(VERSION 2.6)
 
-# set up global BrowserPlus build flags
+# pull in build configuration
 INCLUDE(BuildConfigs.cmake)
 
 SET (serviceName RubyInterpreter)
@@ -118,8 +118,8 @@ SET(stdlibSource
 )
 
 SET(extDest "${outputDir}/ext")
-SET(extSource
-"${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1/i386-darwin9.6.0"
+FILE(GLOB extSource
+     "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1/i386-darwin*"
 )
 
 IF (APPLE)
