@@ -2,3 +2,4 @@
 2. win32 port
 3. implement test of native extensions shipped with ruby services
 4. integrate robust proxy support
+5. test non-ascii path handling on win32
