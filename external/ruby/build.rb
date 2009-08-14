@@ -7,8 +7,8 @@ require 'open-uri'
 require 'digest'
 include Config
 
-$pkg="ruby-1.9.1-p129"
-$md5="6fa62b20f72da471195830dec4eb2013"
+$pkg="ruby-1.9.1-p243"
+$md5="66d4f8403d13623051091347764881a0"
 $tarball = "#{$pkg}.tar.bz2"
 $url="http://ftp.ruby-lang.org/pub/ruby/#{$tarball}"
 
