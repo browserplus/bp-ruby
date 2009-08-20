@@ -106,7 +106,6 @@ puts "***** patching"
 Dir.chdir(pkgDir) do 
   $patches.each { |p|
 	p = File.join("..", p)
-	echo "#{$patchProgram} -p1 < #{p}"
     system("#{$patchProgram} -p1 < #{p}")
   }
 end
@@ -134,6 +133,7 @@ Dir.chdir(pkgDir) do
   puts "***** building ruby..."
   if $platform == "Windows"
     system("nmake")
+    system("nmake install")
   else
     system("make")
     system("make install")
