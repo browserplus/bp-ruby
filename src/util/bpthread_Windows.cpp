@@ -31,7 +31,7 @@
 #include <signal.h>
 #include <assert.h>
 
-#include "bpthread.h"
+#include "bpthread.hh"
 
 using namespace bp::thread;
 

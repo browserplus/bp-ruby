@@ -31,6 +31,7 @@
 #include "fileutils.hh"
 
 #include <fstream>
+#include <iterator>
 
 #ifdef WIN32
 #define PATHSEP		'\\'

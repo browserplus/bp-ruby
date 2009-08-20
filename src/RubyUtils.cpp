@@ -34,6 +34,8 @@
 #include "ruby/config.h"
 #include "ruby.h"
 
+#include <assert.h>
+
 std::string ruby::getLastError()
 {
     VALUE lasterr = rb_gv_get("$!");

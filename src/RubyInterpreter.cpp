@@ -245,6 +245,8 @@ static void * rubyThreadFunc(void * ctx)
 
         // XXX
     }
+
+    return NULL;
 }
 
 // a utility routine to synchronously run "work" on the ruby interpreter

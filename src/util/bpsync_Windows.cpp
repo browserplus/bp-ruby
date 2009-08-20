@@ -19,8 +19,10 @@
  * Contributor(s): 
  * ***** END LICENSE BLOCK *****
  */
-#include "bpsync.h"
+#include "bpsync.hh"
 #include <windows.h>
+
+#include <stdlib.h>
 
 bp::sync::Mutex::Mutex()
 {

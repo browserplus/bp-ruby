@@ -42,6 +42,9 @@ IF (APPLE)
    SET( platIdent "${arch}-${sys}${ver}" )
 
    MESSAGE("platform: ${platIdent}")
+ELSE ()
+   # hard coded for now!
+   SET( platIdent "i386-mswin32_90" )
 ENDIF ()
 
 # looser syntax (that's my patch!)
@@ -97,7 +100,7 @@ SET(HDRS RubyInterpreter.hh)
 ADD_LIBRARY(${serviceName} MODULE ${EXT_SRCS} ${OS_SRCS} ${SRCS} ${HDRS})
 
 # find the path to the ruby library we'll link
-FIND_LIBRARY(rubyDylib NAMES ruby
+FIND_LIBRARY(rubyDylib NAMES ruby msvcr90-ruby191
              PATHS ${rubyLibPath}
              NO_DEFAULT_PATH
              NO_SYSTEM_ENVIRONMENT_PATH)
