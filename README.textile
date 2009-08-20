@@ -43,6 +43,9 @@ $ git submodule update
 
 h4. Building & running on OSX 
 
+Prerequisites
+ a) git (macports anyone?)
+
 # git submodule init
 # git submodule update
 # cd external/ruby && ./build.rb (this will download and build an embeddable ruby)
@@ -60,7 +63,12 @@ Now you'll be in a command shell where you can interact with the loaded ruby ser
 
 h4. Building & running on Win32
 
-XXX
+> git submodule init
+> git submodule update
+> cd external\ruby 
+> ruby build.rb
+
+
 
 License:
 

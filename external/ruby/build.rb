@@ -13,16 +13,19 @@ $tarball = "#{$pkg}.tar.bz2"
 $url="http://ftp.ruby-lang.org/pub/ruby/#{$tarball}"
 $patches = [ ]
 
-if CONFIG['arch'] =~ /mswin/
-    $platform = "Windows"
-else
-    $platform = "Darwin"
-    $patches = [ "snow_leopard_back_compat.patch" ]
-end
-
 topDir = File.dirname(File.expand_path(__FILE__))
 pkgDir = File.join(topDir, $pkg)
 buildDir = File.join(topDir, "ruby_build_output")
+
+if CONFIG['arch'] =~ /mswin/
+    $platform = "Windows"
+    $patches = [ "win32_has_vsnprintf.patch" ]
+    $patchProgram = File.join(topDir, "..", "WinTools", "patch.exe")
+else
+    $platform = "Darwin"
+    $patches = [ "snow_leopard_back_compat.patch" ]
+    $patchProgram = "patch"
+end
 
 if File.exist? buildDir
   puts "it looks like ruby is already built, sheepishly refusing to "
@@ -101,7 +104,11 @@ end
 # patch it up
 puts "***** patching"
 Dir.chdir(pkgDir) do 
-  $patches.each { |p| system("patch -p1 < ../#{p}") }
+  $patches.each { |p|
+	p = File.join("..", p)
+	echo "#{$patchProgram} -p1 < #{p}"
+    system("#{$patchProgram} -p1 < #{p}")
+  }
 end
 
 Dir.chdir(pkgDir) do 
