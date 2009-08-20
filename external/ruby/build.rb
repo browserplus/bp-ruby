@@ -119,6 +119,8 @@ Dir.chdir(pkgDir) do
   puts "***** configuring ruby..."
   if $platform == "Windows"
     ENV['RUNTIMEFLAG'] = '-MT'
+    # XXX: add openssl and zlib
+    ENV['EXTS'] = "bigdecimal,continuation,coverage,digest,digest/md5,digest/rmd160,digest/sha1,digest/sha2,dl,fcntl,fiber,json,mathn,nkf,racc/cparse,ripper,sdbm,socket,stringio,strscan,syck,win32ole" 
     system("win32\\configure.bat --prefix=#{buildDir} --disable-install-doc")
   else
     # we want these bits to work on tiger and leopard regardless of
