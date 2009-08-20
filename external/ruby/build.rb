@@ -19,7 +19,9 @@ buildDir = File.join(topDir, "ruby_build_output")
 
 if CONFIG['arch'] =~ /mswin/
     $platform = "Windows"
-    $patches = [ "win32_has_vsnprintf.patch" ]
+    $patches = [ "win32_has_vsnprintf.patch",
+                 "windows_fix_txname_and_daylight_redef.patch",
+	             "windows_only_mt_if_manifest_exists.patch" ]
     $patchProgram = File.join(topDir, "..", "WinTools", "patch.exe")
 else
     $platform = "Darwin"
