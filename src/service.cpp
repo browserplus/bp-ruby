@@ -62,7 +62,6 @@ BPPAllocate(void ** instance, unsigned int,
     bp::Object * obj = bp::Object::build(contextMap);
     *instance = ruby::allocateInstance(dynamic_cast<bp::Map *>(obj));
     if (obj) delete obj;
-    std::cout << "BPPAllocate: " << *instance << std::endl;
 
     // XXX failure case?
     return 0;
@@ -71,7 +70,6 @@ BPPAllocate(void ** instance, unsigned int,
 void
 BPPDestroy(void * instance)
 {
-    std::cout << "BPPDestroy: " << instance << std::endl;
     ruby::destroyInstance(instance);
 }
 
@@ -87,7 +85,6 @@ BPPInvoke(void * instance, const char * funcName,
 void
 BPPShutdown(void)
 {
-    std::cout << "BPPShutdown" << std::endl;
     ruby::shutdown();
 }
 
@@ -142,8 +139,10 @@ BPPAttach(unsigned int attachID, const BPElement * paramMap)
     s_desc = ruby::loadRubyService(path, error);
 
     if (s_desc == NULL) {
-        std::cerr << "error loading ruby service: " << error
-                  << std::endl;
+        g_bpCoreFunctions->log(
+            BP_ERROR, "error loading ruby service: %s",
+            error.c_str());
+
         return NULL;
     }
 
@@ -178,8 +177,11 @@ BPPInitialize(const BPCFunctionTable * bpCoreFunctions,
     delete obj;
 
     // this will go in the BrowserPlusCore log file at info level.  nice.
-    std::cout << "initializing ruby interpreter with service path: "
-              << path << std::endl;
+    
+    g_bpCoreFunctions->log(
+        BP_INFO,
+        "initializing ruby interpreter with service path: %s",
+        path.c_str());
 
     // now let's initialize the ruby Interpreter
     (void) ruby::initialize(path);

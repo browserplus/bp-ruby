@@ -43,7 +43,6 @@
 
 #include "RubyHeaders.hh"
 
-#include <iostream>
 #include <list>
 
 static char ** s_argv;
@@ -326,8 +325,10 @@ ruby::allocateInstance(const bp::Map * context)
     runWorkSync(&work);
 
     if (work.m_error) {
-        std::cerr << "failed to allocate instance: "
-                  << work.m_verboseError << std::endl;
+        g_bpCoreFunctions->log(
+            BP_ERROR,
+            "failed to allocate instance: %s",
+            work.m_verboseError.c_str());
         return NULL;
     }
 
