@@ -136,7 +136,15 @@ GET_FILENAME_COMPONENT( rubyDylibName ${rubyDylib} NAME )
 # get location of output service library
 GET_TARGET_PROPERTY(loc ${serviceName} LOCATION)
 
-MESSAGE("ruby library: ${rubyDylib}" )
+# handle the .lib .dll dichotomy
+SET (rubyLibToShip ${rubyDylib})
+IF (WIN32) 
+  STRING(REGEX REPLACE "lib$" "dll" rubyLibToShipA ${rubyDylib})
+  STRING(REGEX REPLACE "/lib/" "/bin/" rubyLibToShip ${rubyLibToShipA})
+ENDIF () 
+
+MESSAGE("ruby library to link:  ${rubyDylib}" )
+MESSAGE("library to ship:       ${rubyLibToShip}")
 
 ADD_CUSTOM_COMMAND(
     TARGET ${serviceName} POST_BUILD
@@ -153,10 +161,16 @@ ADD_CUSTOM_COMMAND(
             \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
             \"${outputDir}\"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            \"${rubyDylib}\"
+            \"${rubyLibToShip}\"
             \"${outputDir}\"
-    COMMAND install_name_tool -change \"${rubyDylib}\" \"@loader_path/${rubyDylibName}\" ${loc}
 )
+
+IF (APPLE)  
+  ADD_CUSTOM_COMMAND(
+      TARGET ${serviceName} POST_BUILD
+
+      COMMAND install_name_tool -change \"${rubyDylib}\" \"@loader_path/${rubyDylibName}\" ${loc})
+ENDIF ()
 
 # copy in manifest
 GET_FILENAME_COMPONENT(ServiceLibrary "${loc}" NAME)
