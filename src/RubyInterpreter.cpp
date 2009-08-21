@@ -41,8 +41,7 @@
 #include "BuiltIns.hh"
 #include "ServiceGlobals.hh"
 
-#include "ruby/config.h"
-#include "ruby.h"
+#include "RubyHeaders.hh"
 
 #include <iostream>
 #include <list>

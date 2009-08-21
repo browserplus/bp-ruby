@@ -31,10 +31,9 @@
 
 #include "RubyUtils.hh"
 
-#include "ruby/config.h"
-#include "ruby.h"
-
 #include <assert.h>
+
+#include "RubyHeaders.hh"
 
 std::string ruby::getLastError()
 {

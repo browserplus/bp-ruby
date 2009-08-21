@@ -40,10 +40,9 @@
 
 #include "bpservicedescription.hh"
 
-#include "ruby/config.h"
-#include "ruby.h"
-
 #include <string>
+
+#include "RubyHeaders.hh"
 
 namespace ruby 
 {

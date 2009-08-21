@@ -34,8 +34,7 @@
 
 #include <string>
 
-#include "ruby/config.h"
-#include "ruby.h"
+#include "RubyHeaders.hh"
 
 namespace ruby {
     /** get the last error encountered from the ruby evaluation environment */

@@ -37,8 +37,7 @@
 
 #include <assert.h>
 
-#include <ruby/ruby.h>
-#include <ruby/intern.h>
+#include "RubyHeaders.hh"
 
 VALUE bp_rb_cTransaction;
 VALUE bp_rb_cCallback;

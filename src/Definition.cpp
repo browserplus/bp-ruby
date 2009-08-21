@@ -34,9 +34,7 @@
 
 #include "Definition.hh"
 #include "RubyUtils.hh"
-
-#include "ruby/config.h"
-#include "ruby.h"
+#include "RubyHeaders.hh"
 
 #include <sstream> 
 const char * ruby::BP_GLOBAL_DEF_SYM = "$BrowserPlusEntryPointClass";

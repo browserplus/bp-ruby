@@ -38,6 +38,7 @@
 
 // an abstraction around ruby 
 #include "RubyInterpreter.hh"
+#include "RubyHeaders.hh"
 
 #include <map>
 #include <string>
@@ -107,6 +108,8 @@ BPPAttach(unsigned int attachID, const BPElement * paramMap)
 {
     const BPCoreletDefinition * def = NULL;
 
+    if (def != NULL) return def;
+
     // the name of the ruby script and path can be extracted from the
     // parameter map 
     bp::Object * obj = bp::Object::build(paramMap);
@@ -144,7 +147,7 @@ BPPAttach(unsigned int attachID, const BPElement * paramMap)
         return NULL;
     }
 
-    return s_desc->toBPCoreletDefinition();
+    return (def = s_desc->toBPCoreletDefinition());
 }
 
 void

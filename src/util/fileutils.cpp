@@ -30,9 +30,6 @@
 
 #include "fileutils.hh"
 
-#include <fstream>
-#include <iterator>
-
 #ifdef WIN32
 #define PATHSEP		'\\'
 #define PATHPARENT	".."
@@ -44,25 +41,22 @@
 // read the contents of a file into a std::string
 std::string file::readFile(const std::string & path)
 {
-    std::ifstream ifs;
+    std::string contents;
     
     // XXX: win32 i18n issues!  must convert path from UTF8 to wstring
+    FILE * fptr = fopen(path.c_str(), "r");
 
-    ifs.open(path.c_str(), std::ios::in);
-    if (!ifs.is_open()) return std::string();
+    if (fptr) {
+        size_t rd = 0;
+        char buf[1024];
 
-    std::string sOut;
-
-    // Optimization: Reduce likelihood of reallocations/copies.
-    const int knInitialCapacity = 2048;
-    sOut.reserve(knInitialCapacity);
+        while ((rd = fread((void *) buf, sizeof(char), sizeof(buf), fptr)) > 0)
+        {
+            contents.append(buf, rd);
+        }
+    }
     
-    // See Meyers "Effective STL", Item 29.
-    copy(std::istreambuf_iterator<char>(ifs),
-         std::istreambuf_iterator<char>(),
-         back_inserter(sOut));
-
-    return sOut;
+    return contents;
 }
 
 
