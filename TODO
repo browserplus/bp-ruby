@@ -1,5 +1,7 @@
-1. trim ruby distribution a bit
-2. win32 port
-3. implement test of native extensions shipped with ruby services
-4. integrate robust proxy support
-5. test non-ascii path handling on win32
+1. trim ruby distribution!  specifically, we should remove some of the
+   encodings supported.
+2. build a test of combining binary ruby extensions with ruby services
+3. test non-ascii path handling on win32
+4. add built-in support for openssl on win32
+5. add built-in support for the zlib extension on win32
+6. integrate robust system proxy support
