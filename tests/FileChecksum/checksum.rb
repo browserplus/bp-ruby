@@ -9,8 +9,6 @@ class FileChecksum
 
   def md5(bp, args)
     begin
-      require 'pp' 
-      pp args
       contents = File.open(args['file'].realpath, "rb") { |f| f.read }
       bp.complete(Digest::MD5.hexdigest(contents))
     rescue Exception => err
