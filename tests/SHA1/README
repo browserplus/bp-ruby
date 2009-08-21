@@ -1,0 +1,3 @@
+A sample ruby service which generates an sha1 sig of some text, a very
+basic test of ruby extensions
+
