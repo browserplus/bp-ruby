@@ -122,7 +122,7 @@ SET(stdlibSource
 
 SET(extDest "${outputDir}/ext")
 FILE(GLOB extSource
-     "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1/i386-darwin*"
+     "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1/i386-*"
 )
 
 IF (APPLE)
