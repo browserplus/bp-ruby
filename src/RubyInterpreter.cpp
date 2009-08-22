@@ -82,6 +82,7 @@ static void * rubyThreadFunc(void * ctx)
         // include "browserplus.rb" which cleans up the service authors
         // definition semantics a bit
         rb_require("browserplus.rb");
+        rb_require("pathname");
 
         // let's release the spawning thread
         s_rubyLock.lock();

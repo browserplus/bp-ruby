@@ -1,5 +1,5 @@
-0. fix path argument handling (file:// -> path mapping, and back again)
-1. trim ruby distribution!  specifically, we should remove some of the encodings supported.
+1. trim ruby distribution!  specifically, we should remove some of the
+   encodings supported.
 2. build a test of combining binary ruby extensions with ruby services
 3. test non-ascii path handling on win32
 4. add built-in support for openssl on win32

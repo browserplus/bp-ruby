@@ -74,6 +74,7 @@ SET(EXT_SRCS
   "${CPPTOOLS_DIR}/bptypeutil.cpp"
   "${CPPTOOLS_DIR}/bpservicedescription.cpp"
   "${CPPTOOLS_DIR}/bpserviceversion.cpp"
+  "${CPPTOOLS_DIR}/bpurlutil.cpp"
 )
 
 SET(SRCS

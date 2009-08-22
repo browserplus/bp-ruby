@@ -3,13 +3,15 @@
 # MD5 sum of a file that a user has selected
 #
 
+require 'digest/md5'
+
 class FileChecksum
   bp_version "1.0.10"
   bp_doc "Allows client side MD5 of user selected files." 
 
   def md5(bp, args)
     begin
-      contents = File.open(args['file'].realpath, "rb") { |f| f.read }
+      contents = File.open(args[:file].realpath, "rb") { |f| f.read }
       bp.complete(Digest::MD5.hexdigest(contents))
     rescue Exception => err
       bp.error("Error", err.to_s)
