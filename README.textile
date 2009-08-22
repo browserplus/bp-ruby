@@ -18,8 +18,9 @@ This implementation will leverage the upcoming process separation in BrowserPlus
 
 h3. Current State:
 
-just gettin' started, focusing on mac first and porting over 
-relavant bits of the old ruby interpreter.
+Nearly feature complete and building running on win32 and osx.  Need
+an improved build system with automatic test invocation, as well as 
+a couple more tasks complete (see the TODO)
 
 h3. Build Notes:
 
