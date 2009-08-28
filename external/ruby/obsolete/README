@@ -1,0 +1,7 @@
+win32_wide_char.patch is an obsolete patch against ruby 1.8.7 which
+attempted to introduce minimal wide char support in bits where ruby
+interacts with the file system.
+
+stored here for reference until similar support is integrated into 
+the 1.9 series.
+
