@@ -4,3 +4,6 @@
 [submodule "external/bpsdk"]
 	path = external/bpsdk
 	url = git://github.com/browserplus/bp-service-api.git
+[submodule "external/bakery"]
+	path = external/bakery
+	url = git://github.com/lloyd/bakery.git
