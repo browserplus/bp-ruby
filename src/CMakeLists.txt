@@ -17,9 +17,6 @@ PROJECT(${serviceName}Service)
 
 SET (outputDir "${CMAKE_CURRENT_BINARY_DIR}/${serviceName}")
 
-SET (rubyLibPath
-     "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib")
-
 # build up the "platform identifier"
 IF (APPLE)
    execute_process(COMMAND uname -p
@@ -56,18 +53,25 @@ IF (NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE "Debug")
 ENDIF ()
 
-SET(CPPTOOLS_DIR
-  "${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-tools/CppTools/src"
-)
+
+
+# short hand definitions
+STRING(TOLOWER ${CMAKE_BUILD_TYPE} lilBuildType)
+
+SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
+SET(extLibDir "${extDir}/built/lib/${lilBuildType}")
+SET(extIncDir "${extDir}/built/include/ruby-1.9.1")
+SET(CPPTOOLS_DIR "${extDir}/bp-service-tools/CppTools/src")
 
 INCLUDE_DIRECTORIES(
-  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include/ruby-1.9.1/${platIdent}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/include/ruby-1.9.1"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../external/bpsdk/include"
+  "${extIncDir}/${platIdent}"
+  "${extIncDir}"
+  "${extDir}/bpsdk/include"
   "${CPPTOOLS_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
+SET(rubyLibPath ${extLibDir})
 LINK_DIRECTORIES(${rubyLibPath})
 
 SET(EXT_SRCS
@@ -101,6 +105,7 @@ SET(HDRS RubyInterpreter.hh)
 ADD_LIBRARY(${serviceName} MODULE ${EXT_SRCS} ${OS_SRCS} ${SRCS} ${HDRS})
 
 # find the path to the ruby library we'll link
+MESSAGE("looking in ${rubyLibPath}")
 FIND_LIBRARY(rubyDylib NAMES ruby msvcr90-ruby191
              PATHS ${rubyLibPath}
              NO_DEFAULT_PATH
@@ -117,14 +122,10 @@ IF (APPLE)
 ENDIF (APPLE)
 
 SET(stdlibDest "${outputDir}/stdlib")
-SET(stdlibSource
-"${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1"
-)
+SET(stdlibSource "${extDir}/built/lib/ruby/1.9.1")
 
 SET(extDest "${outputDir}/ext")
-FILE(GLOB extSource
-     "${CMAKE_CURRENT_SOURCE_DIR}/../external/ruby/ruby_build_output/lib/ruby/1.9.1/i386-*"
-)
+FILE(GLOB extSource "${extDir}/built/lib/ruby/1.9.1/i386-*")
 
 IF (APPLE)
     SET(RM_CMD rm -rf)
