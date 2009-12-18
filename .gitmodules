@@ -1,6 +1,6 @@
 [submodule "external/bp-service-tools"]
 	path = external/bp-service-tools
-	url = git://github.com/lloyd/bp-service-tools.git
+	url = git://github.com/browserplus/bp-service-tools.git
 [submodule "external/bpsdk"]
 	path = external/bpsdk
 	url = git://github.com/browserplus/bp-service-api.git
