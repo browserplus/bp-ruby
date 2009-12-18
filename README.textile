@@ -15,7 +15,7 @@ The key changes in 5.x over 4.x will include:
 # ability to ship byte compiled ruby for obfuscation
    (closed source code sucks, more for obfuscating api keys, and faster
     load times)
-# improved the browserplus specific bits of our embedde ruby environment
+# improved the browserplus specific bits of our embedded ruby environment
   (thanks _why, wherever you are)
 
 Features under consideration include:
