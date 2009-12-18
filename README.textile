@@ -1,26 +1,31 @@
 h2. Overview
 
-This will be the home of the next iteration of the BrowserPlus "RubyInterpreter" service:  http://browserplus.yahoo.com/developer/services/?s=RubyInterpreter
+This will be the home of the next iteration of the BrowserPlus
+"RubyInterpreter" service (5.x):
+http://browserplus.org/docs/developer/services/RubyInterpreter.html
 
-This implementation will leverage the upcoming process separation in BrowserPlus 2.2.0 to address some community requests, namely:
+The key changes in 5.x over 4.x will include:
 
-# bp_require is silly, we should be able to require()
-# dependent services should be able to include native extensions
-# performance improvements (seek help to solve the "select problem")
-# upgrade to ruby 1.9.1 stable (better i18n support, etc, etc)
-# more built in extensions to the ruby environment
-  (including the ability to use other services from a ruby service)
+# bp_require is no longer required, now, require() works to include ruby
+  files out of the service directory
+# you can able to ship native extensions with your ruby service
+# upgrade to ruby 1.9.x
+# performance improvements:  1.9.1 is much faster and we're working to
+  eliminate polling
 # ability to ship byte compiled ruby for obfuscation
    (closed source code sucks, more for obfuscating api keys, and faster
     load times)
-# include why the lucky stiff's (in spirit at least) simplifications
-   to writing ruby services
+# improved the browserplus specific bits of our embedde ruby environment
+  (thanks _why, wherever you are)
+
+Features under consideration include:
+# more built in extensions to the ruby environment (including the ability
+  to use other services from a ruby service)
+
 
 h3. Current State:
 
-Nearly feature complete and building running on win32 and osx.  Need
-an improved build system with automatic test invocation, as well as 
-a couple more tasks complete (see the TODO)
+To be pushed to production RSN.
 
 h3. Build Notes:
 
