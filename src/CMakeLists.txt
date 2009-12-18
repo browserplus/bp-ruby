@@ -60,7 +60,7 @@ STRING(TOLOWER ${CMAKE_BUILD_TYPE} lilBuildType)
 
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
 SET(extLibDir "${extDir}/built/lib/${lilBuildType}")
-SET(extIncDir "${extDir}/built/include/ruby-1.9.1")
+SET(extIncDir "${extDir}/built/include/ruby19")
 SET(CPPTOOLS_DIR "${extDir}/bp-service-tools/CppTools/src")
 
 INCLUDE_DIRECTORIES(
