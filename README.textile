@@ -48,9 +48,9 @@ h4. Building & running on OSX
 
 # git submodule init
 # git submodule update
-# cd external/ruby && ./build.rb (this will download and build an embeddable ruby)
+# cd external && ./build.rb (this will download and build an embeddable ruby)
 # cd src
-# mkdir build
+# mkdir build && cd build
 # cmake ..
 # make
 
@@ -65,7 +65,7 @@ h4. Building & running on Win32
 
 > git submodule init
 > git submodule update
-> cd external\ruby 
+> cd external
 > ruby build.rb
 > cd ..\..\src
 > mkdir build
