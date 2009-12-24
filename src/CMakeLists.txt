@@ -53,8 +53,6 @@ IF (NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE "Debug")
 ENDIF ()
 
-
-
 # short hand definitions
 STRING(TOLOWER ${CMAKE_BUILD_TYPE} lilBuildType)
 
@@ -122,11 +120,13 @@ IF (APPLE)
 #                     COMMAND strip -x \"${outputDir}/${ServiceLibrary}\")
 ENDIF (APPLE)
 
+
+
 SET(stdlibDest "${outputDir}/stdlib")
-SET(stdlibSource "${extDir}/built/lib/ruby/1.9.1")
+SET(stdlibSource "${extLibDir}/ruby/1.9.1")
 
 SET(extDest "${outputDir}/ext")
-FILE(GLOB extSource "${extDir}/built/lib/ruby/1.9.1/i386-*")
+FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/i386-*")
 
 IF (APPLE)
     SET(RM_CMD rm -rf)
@@ -153,6 +153,8 @@ ADD_CUSTOM_COMMAND(
     TARGET ${serviceName} POST_BUILD
     COMMAND ${RM_CMD} \"${stdlibDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        \"${stdlibSource}\" \"${stdlibDest}\"
+    COMMAND ${CMAKE_COMMAND} -E echo
                         \"${stdlibSource}\" \"${stdlibDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
