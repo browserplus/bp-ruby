@@ -110,8 +110,9 @@ FIND_LIBRARY(rubyDylib NAMES ruby msvcr90-ruby191
              PATHS ${rubyLibPath}
              NO_DEFAULT_PATH
              NO_SYSTEM_ENVIRONMENT_PATH)
+GET_FILENAME_COMPONENT(rubyDylibName ${rubyDylib} NAME)
 
-TARGET_LINK_LIBRARIES(${serviceName} ${rubyDylib})
+TARGET_LINK_LIBRARIES(${serviceName} ${rubyDylibName})
 
 # create service directory
 FILE(MAKE_DIRECTORY ${outputDir})
@@ -170,8 +171,8 @@ ADD_CUSTOM_COMMAND(
 IF (APPLE)  
   ADD_CUSTOM_COMMAND(
       TARGET ${serviceName} POST_BUILD
-
-      COMMAND install_name_tool -change \"${rubyDylib}\" \"@loader_path/${rubyDylibName}\" ${loc})
+      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup.sh ${loc}
+      )
 ENDIF ()
 
 # copy in manifest
