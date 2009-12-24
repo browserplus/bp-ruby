@@ -171,9 +171,19 @@ ADD_CUSTOM_COMMAND(
 )
 
 IF (APPLE)  
+  # repeat after me:  I love dylibs
+  # this post-build step will help the service find our embedded dynamic ruby
+  # dylib, and will help THAT guy find stdlib extensions (.bundles in ext/)
+  SET(librubyBefore "libruby.dylib")
+  SET(librubyAfter "libruby_bp.dylib")
+
   ADD_CUSTOM_COMMAND(
       TARGET ${serviceName} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy \"${outputDir}/${librubyBefore}\" \"${outputDir}/${librubyAfter}\"   
+      COMMAND ${CMAKE_COMMAND} -E remove \"${outputDir}/${librubyBefore}\"
       COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup.sh ${loc}
+      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup.sh ${loc}
+      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup.sh \"${extDest}\"
       )
 ENDIF ()
 
