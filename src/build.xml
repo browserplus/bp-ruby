@@ -55,7 +55,7 @@ cmake -G "Visual Studio 9 2008" ..\src
 call "C:\Program Files\Microsoft Visual Studio 9.0\vc\bin\vcvars32.bat"
 if not %WINTEMP%*==* set TEMP=%WINTEMP%
 if not %WINTMP%*==* set TMP=%WINTMP%
-devenv BrowserPlus.sln /Build Debug /Project ALL_BUILD
+devenv RubyInterpreterService.sln /Build Debug /Project ALL_BUILD
         </echo>
         <exec executable="cmd" dir="../build" failonerror="true">
             <arg line="/C x1.bat" />
@@ -79,7 +79,7 @@ cmake -G "Visual Studio 9 2008" ..\src
 call "C:\Program Files\Microsoft Visual Studio 9.0\vc\bin\vcvars32.bat"
 if not %WINTEMP%*==* set TEMP=%WINTEMP%
 if not %WINTMP%*==* set TMP=%WINTMP%
-devenv BrowserPlus.sln /Build Release /Project ALL_BUILD
+devenv RubyInterpreterService.sln /Build Release /Project ALL_BUILD
         </echo>
         <exec executable="cmd" dir="../build" failonerror="true">
             <arg line="/C x1.bat" />
@@ -102,7 +102,7 @@ devenv BrowserPlus.sln /Build Release /Project ALL_BUILD
 call "C:\Program Files\Microsoft Visual Studio 9.0\vc\bin\vcvars32.bat"
 if not %WINTEMP%*==* set TEMP=%WINTEMP%
 if not %WINTMP%*==* set TMP=%WINTMP%
-devenv BrowserPlus.sln /Build Debug /Project test
+devenv RubyInterpreterService.sln /Build Debug /Project test
         </echo>
         <exec executable="cmd" dir="../build" failonerror="true">
             <arg line="/C x1.bat" />
@@ -115,7 +115,7 @@ devenv BrowserPlus.sln /Build Debug /Project test
 call "C:\Program Files\Microsoft Visual Studio 9.0\vc\bin\vcvars32.bat"
 if not %WINTEMP%*==* set TEMP=%WINTEMP%
 if not %WINTMP%*==* set TMP=%WINTMP%
-devenv BrowserPlus.sln /Build Release /Project test
+devenv RubyInterpreterService.sln /Build Release /Project test
         </echo>
         <exec executable="cmd" dir="../build" failonerror="true">
             <arg line="/C x1.bat" />
