@@ -53,12 +53,9 @@ IF (NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE "Debug")
 ENDIF ()
 
-# short hand definitions
-STRING(TOLOWER ${CMAKE_BUILD_TYPE} lilBuildType)
-
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
-SET(extLibDir "${extDir}/built/lib/${lilBuildType}")
-SET(extIncDir "${extDir}/built/include/ruby19")
+SET(extLibDir "${extDir}/${CMAKE_SYSTEM_NAME}/lib/${CMAKE_BUILD_TYPE}")
+SET(extIncDir "${extDir}/${CMAKE_SYSTEM_NAME}/include/ruby19")
 SET(CPPTOOLS_DIR "${extDir}/bp-service-tools/CppTools/src")
 
 INCLUDE_DIRECTORIES(
