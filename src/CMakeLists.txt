@@ -54,11 +54,7 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF ()
 
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
-IF (WIN32)
-    SET(extLibDir "${extDir}/${CMAKE_SYSTEM_NAME}/lib")
-ELSE (WIN32)
-    SET(extLibDir "${extDir}/${CMAKE_SYSTEM_NAME}/lib/${CMAKE_BUILD_TYPE}")
-ENDIF (WIN32)
+SET(extLibDir "${extDir}/${CMAKE_SYSTEM_NAME}/lib/${CMAKE_BUILD_TYPE}")
 SET(extIncDir "${extDir}/${CMAKE_SYSTEM_NAME}/include/ruby19")
 SET(CPPTOOLS_DIR "${extDir}/bp-service-tools/CppTools/src")
 
