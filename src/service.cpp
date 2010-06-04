@@ -56,14 +56,20 @@
 const BPCFunctionTable * g_bpCoreFunctions;
 
 int
-BPPAllocate(void ** instance, unsigned int,
-            const BPElement * contextMap)
+BPPAllocate(void ** instance, const BPString uri, const BPPath serviceDir,
+            const BPPath dataDir, const BPPath tempDir, const BPString locale,
+            const BPString userAgent, int clientPid)
 {
-    bp::Object * obj = bp::Object::build(contextMap);
-    *instance = ruby::allocateInstance(dynamic_cast<bp::Map *>(obj));
+    bp::Map * obj = new bp::Map();
+    obj->add("uri", new bp::String(uri));
+    obj->add("service_dir", new bp::Path(serviceDir));
+    obj->add("data_dir", new bp::Path(dataDir));
+    obj->add("temp_dir", new bp::Path(tempDir));
+    obj->add("locale", new bp::String(locale));
+    obj->add("user_agent", new bp::String(userAgent));
+    obj->add("client_pid", new bp::Integer(clientPid));
+    *instance = ruby::allocateInstance(obj);
     if (obj) delete obj;
-
-    // XXX failure case?
     return 0;
 }
 
@@ -82,127 +88,92 @@ BPPInvoke(void * instance, const char * funcName,
     if (obj) delete obj;
 }
 
+// file scoped memory representation of the services interface.
+static bp::service::Description * s_desc = NULL;
+
+
 void
 BPPShutdown(void)
 {
     ruby::shutdown();
-}
 
-// a description of this corelet.
-BPCoreletDefinition s_rubyInterpreterDef = {
-    "RubyInterpreter",
-    5, 0, 0,
-    "Allows other services to be written in Ruby.",
-    0,
-    NULL
-};
-
-// file scoped memory representation of the services interface.
-static bp::service::Description * s_desc = NULL;
-
-const BPCoreletDefinition *
-BPPAttach(unsigned int attachID, const BPElement * paramMap)
-{
-    const BPCoreletDefinition * def = NULL;
-
-    if (def != NULL) return def;
-
-    // the name of the ruby script and path can be extracted from the
-    // parameter map 
-    bp::Object * obj = bp::Object::build(paramMap);
-
-    // first get the path
-    if (!obj->has("CoreletDirectory", BPTString)) {
-        delete obj;
-        return NULL;
-    }
-    std::string path;
-    path.append(((bp::Path *) obj->get("CoreletDirectory"))->value());
-
-    // now get the script name
-    if (!obj->has("Parameters", BPTMap)) {
-        delete obj;
-        return NULL;
-    }
-
-    bp::Map * params = (bp::Map *) obj->get("Parameters");
-    
-    if (!params->has("ScriptFile", BPTString)) {
-        delete obj;
-        return NULL;
-    }
-
-    path.append(PATHSEP);
-    path.append(((bp::Path *) params->get("ScriptFile"))->value());    
-
-    std::string error;
-    s_desc = ruby::loadRubyService(path, error);
-
-    if (s_desc == NULL) {
-        g_bpCoreFunctions->log(
-            BP_ERROR, "error loading ruby service: %s",
-            error.c_str());
-
-        return NULL;
-    }
-
-    return (def = s_desc->toBPCoreletDefinition());
-}
-
-void
-BPPDetach(unsigned int attachID)
-{
     if (s_desc) delete s_desc;
     s_desc = NULL;
 }
 
-const BPCoreletDefinition *
-BPPInitialize(const BPCFunctionTable * bpCoreFunctions,
-              const BPElement * parameterMap)
+const BPServiceDefinition *
+BPPInitialize(const BPCFunctionTable * coreFunctionTable,
+              const BPPath serviceDir,
+              const BPPath dependentDir,
+              const BPElement * dependentParams)
 {
-    // the name of the ruby script and path can be extracted from the
-    // parameter map 
-    bp::Object * obj = bp::Object::build(parameterMap);
+    g_bpCoreFunctions = coreFunctionTable;
 
-    // first get the path
-    if (!obj->has("CoreletDirectory", BPTString)) {
-        delete obj;
-        return NULL;
+    if (dependentDir == NULL) {
+        // a description of this corelet.
+        static BPServiceDefinition s_rubyInterpreterDef = {
+            "RubyInterpreter",
+            5, 0, 1,
+            "Allows other services to be written in Ruby.",
+            0,
+            NULL
+        };
+        return &s_rubyInterpreterDef;
+    } else {
+        // XXX: use bp::file::Path here
+
+        // serviceDir is the directory the ruby interpreter is installed into
+
+        // depedentDir is the directory of the dependent ruby service
+
+        g_bpCoreFunctions->log(
+            BP_INFO,
+            "initializing ruby interpreter with service path: %s",
+            serviceDir);
+
+        // now let's initialize the ruby Interpreter
+        (void) ruby::initialize(serviceDir);
+
+        // the name of the ruby script and path can be extracted from the
+        // dependent parameters map 
+        bp::Object * params = bp::Object::build(dependentParams);
+
+        if (!params->has("ScriptFile", BPTString)) {
+            delete params;
+            return NULL;
+        }
+        std::string path(dependentDir);
+        path.append(PATHSEP);
+        path.append(((bp::Path *) params->get("ScriptFile"))->value());    
+
+        std::string error;
+        s_desc = ruby::loadRubyService(path, error);
+
+        if (s_desc == NULL) {
+            g_bpCoreFunctions->log(
+                BP_ERROR, "error loading ruby service: %s",
+                error.c_str());
+            return NULL;
+        }
+        
+        return s_desc->toBPServiceDefinition();
     }
-
-    std::string path(((bp::String *) obj->get("CoreletDirectory"))->value());
-
-    g_bpCoreFunctions = bpCoreFunctions;
-
-    delete obj;
-
-    // this will go in the BrowserPlusCore log file at info level.  nice.
-    
-    g_bpCoreFunctions->log(
-        BP_INFO,
-        "initializing ruby interpreter with service path: %s",
-        path.c_str());
-
-    // now let's initialize the ruby Interpreter
-    (void) ruby::initialize(path);
-
-    return &s_rubyInterpreterDef;
 }
-
-/** and finally, declare the entry point to the corelet */
-BPPFunctionTable funcTable = {
-    BPP_CORELET_API_VERSION,
-    BPPInitialize,
-    BPPShutdown,
-    BPPAllocate,
-    BPPDestroy,
-    BPPInvoke,
-    BPPAttach,
-    BPPDetach
-};
 
 const BPPFunctionTable *
 BPPGetEntryPoints(void)
 {
+    static BPPFunctionTable funcTable = {
+        BPP_SERVICE_API_VERSION,
+        BPPInitialize,
+        BPPShutdown,
+        BPPAllocate,
+        BPPDestroy,
+        BPPInvoke,
+        NULL,
+        NULL,
+        NULL
+    };
+
     return &funcTable;
 }

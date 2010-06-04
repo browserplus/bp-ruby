@@ -61,7 +61,7 @@ SET(CPPTOOLS_DIR "${extDir}/bp-service-tools/CppTools/src")
 INCLUDE_DIRECTORIES(
   "${extIncDir}/${platIdent}"
   "${extIncDir}"
-  "${extDir}/bpsdk/include"
+  "${extDir}/bp-service-tools/CppTools/external/bpsdk/include"
   "${CPPTOOLS_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
@@ -73,7 +73,6 @@ SET(EXT_SRCS
   "${CPPTOOLS_DIR}/bptypeutil.cpp"
   "${CPPTOOLS_DIR}/bpservicedescription.cpp"
   "${CPPTOOLS_DIR}/bpserviceversion.cpp"
-  "${CPPTOOLS_DIR}/bpurlutil.cpp"
 )
 
 SET(SRCS
@@ -191,3 +190,11 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/manifest.json"
 ADD_CUSTOM_COMMAND(TARGET ${serviceName} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
                            \"${loc}\" \"${outputDir}\")
+
+# a custom step to build latest externals
+SET (pathToExtBuildRb "${CMAKE_CURRENT_SOURCE_DIR}/../external/build.rb")
+ADD_CUSTOM_TARGET(
+    BuildExternals ALL
+    COMMAND ruby ${pathToExtBuildRb}
+    COMMENT "Build 3rd party dependencies")
+ADD_DEPENDENCIES( ${serviceName} BuildExternals )

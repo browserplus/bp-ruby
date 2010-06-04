@@ -120,7 +120,7 @@ trans_prompt(int argc, VALUE * argv, VALUE obj)
     const BPElement * e = (data == NULL) ? NULL : data->elemPtr();
 
     s_lock.lock();
-    unsigned int x = g_bpCoreFunctions->prompt(tid, path.c_str(), e,
+    unsigned int x = g_bpCoreFunctions->prompt(tid, (BPPath) path.c_str(), e,
                                                dummyCB, NULL);
 
     // grab the passed in block and increment a reference to it

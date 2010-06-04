@@ -37,8 +37,6 @@
 #include "RubyUtils.hh"
 #include "BuiltIns.hh"
 
-#include "bpurlutil.hh"
-
 static int hashPopulator(VALUE key, VALUE value, VALUE callbackData)
 {
     bp::Map * m = (bp::Map *) callbackData;
@@ -100,9 +98,7 @@ rubyToBPObject(VALUE v)
                     VALUE pathString =
                         ruby::invokeFunction(absPath, "to_s", &error, 0);
                     if (!error && TYPE(pathString) == T_STRING) {
-                        std::string uri =
-                            bp::urlutil::urlFromPath(RSTRING_PTR(pathString));
-                        obj = new bp::Path(uri);
+                        obj = new bp::Path(RSTRING_PTR(pathString));
                     }
                     break;
                 }
@@ -151,15 +147,14 @@ bpObjectToRuby(const bp::Object * obj,
         case BPTString:
             v = rb_str_new2(((bp::String *) obj)->value());
             break;
-        case BPTPath: {
+        case BPTNativePath: {
             VALUE id = rb_intern("Pathname");
             VALUE klass = 0;
             if (rb_const_defined(rb_cObject, id) &&
                 (klass = rb_const_get(rb_cObject, id)) &&
                 TYPE(klass) == T_CLASS)
             {
-                std::string url = ((bp::Path *) obj)->value();
-                std::string path = bp::urlutil::pathFromURL(url);
+                std::string path = ((bp::Path *) obj)->value();
                 VALUE p = rb_str_new2(path.c_str());
                 v = rb_class_new_instance(1, &p, klass);
             }
