@@ -81,8 +81,12 @@ static void * rubyThreadFunc(void * ctx)
 
         // include "browserplus.rb" which cleans up the service authors
         // definition semantics a bit
+
+        g_bpCoreFunctions->log(BP_INFO, "requiring browserplus.rb");
         rb_require("browserplus.rb");
+        g_bpCoreFunctions->log(BP_INFO, "requiring pathname");
         rb_require("pathname");
+        g_bpCoreFunctions->log(BP_INFO, "successfully required ruby libs");
 
         // let's release the spawning thread
         s_rubyLock.lock();

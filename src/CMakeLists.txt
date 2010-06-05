@@ -119,7 +119,7 @@ ENDIF (APPLE)
 
 
 SET(stdlibDest "${outputDir}/stdlib")
-SET(stdlibSource "${extLibDir}/ruby/ruby/1.9.1")
+SET(stdlibSource "${extLibDir}/ruby/1.9.1")
 
 SET(extDest "${outputDir}/ext")
 FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/i386-*")
