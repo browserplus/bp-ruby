@@ -12,23 +12,19 @@ end
 
 module BrowserPlus
   module ProcessController
-    # perform a blocking read.  the third parameter is a magic duck:
-    # 1. if it evaluates to false, we'll block the full timeo
-    # 2. if it is a pattern, we'll  block until either timeo expires OR
-    #    we get output which matches the pattern
-    def mypread(pio, timeo, lookFor = false)
+    def getmsg(pio, timeo, lookFor = false)
+      j = nil
       output = String.new
+      # XXX: todo, output handler where multiple messages are combined!
       while nil != select( [ pio ], nil, nil, timeo )  
         output += pio.sysread(1024) 
-        break if output.length && lookFor && output =~ lookFor
+        begin
+          j = JSON.parse(output)
+          break
+        rescue
+        end
       end
-      output
-    end
-
-    def mypread_raise(pio, timeo, lookFor = false)
-      str = mypread(pio, timeo, lookFor)
-      raise "read failed" if lookFor != false && str !~ lookFor
-      str
+      j
     end
   end
 
@@ -38,20 +34,22 @@ module BrowserPlus
       raise "can't execute ServiceRunner: #{sr}" if !File.executable? sr
       cmd = ""
       if provider != nil
-        cmd = "#{sr} -providerPath #{provider} #{path}"
+        cmd = "#{sr} -slave -providerPath #{provider} #{path}"
       else
-        cmd = "#{sr} #{path}"
+        cmd = "#{sr} -slave #{path}"
       end
       @srp = IO.popen(cmd, "w+")
-      str = mypread_raise(@srp, 0.5, /service initialized/)
+      i = getmsg(@srp, 0.5)
+      raise "couldn't initialize" if !i['msg'] =~ /service initialized/
       @instance = nil
     end
 
     # allocate a new instance
     def allocate
       @srp.syswrite "allocate\n"
-      str = mypread_raise(@srp, 3.0, /allocated/)
-      num = str.match(/allocated: (\d+)/)[1]
+      i = getmsg(@srp, 2.0)
+      raise "couldn't allocate" if !i.has_key?('msg')
+      num = i['msg']
       Instance.new(@srp, num)
     end
 
@@ -121,10 +119,9 @@ module BrowserPlus
       # always select the current instance
       @srp.syswrite "select #{@iid}\n"
       @srp.syswrite cmd
-      str = mypread(@srp, 4.0, /^(?:> )?spawned process|^(?: ?\> )?error:|^(?:> )?".*"\n|^\}$|(?:^(?:> )?no such function: #{func.to_s}$)/m)
-      str = str.gsub(/^\> /m, "").gsub(/^ \> /m, "").gsub(/^\>/m, "")
-      raise str if str =~ /no such function: #{func.to_s}/ || str =~ /^error:/ || str =~ /^spawned/
-      JSON.parse("[#{str}]")[0]
+      i = getmsg(@srp, 4.0)
+      raise "invocation failure" if i['type'] != 'results'
+      i['msg']
     end
 
     def destroy
