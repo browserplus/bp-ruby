@@ -47,6 +47,7 @@ module BrowserPlus
       end
       @srp = IO.popen(cmd, "w+")
       i = getmsg(@srp, 0.5)
+      raise i['msg'] if i && i['type'] == 'error' && i['msg']
       raise "couldn't initialize" if i['msg'] !~ /service initialized/
       @instance = nil
     end
@@ -136,6 +137,7 @@ module BrowserPlus
         end
         break
       end
+      raise i['msg'] if i && i['type'] == 'error' && i['msg']
       raise "invocation failure" if i == nil || i['type'] != 'results'
       i['msg']
     end

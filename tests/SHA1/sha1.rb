@@ -1,5 +1,4 @@
 # Toy crypto service for testing built-in ruby extensions
-#
 
 require 'digest/sha1'
 
