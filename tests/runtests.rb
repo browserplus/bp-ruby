@@ -26,7 +26,11 @@ class TestFileAccess < Test::Unit::TestCase
   def test_basic_service
     BrowserPlus.run("BasicService", @interpService) { |s|
       require 'pp'
-      assert_equal s.hello({:who => 'lloyd'}), "hello lloyd"
+      r = s.hello({:who => 'lloyd'}) { |o|
+        assert_equal o['callback'], 1
+        assert_equal o['args'], "Hi there lloyd"
+      }
+     assert_equal r, "hello lloyd"
     }
   end
 end

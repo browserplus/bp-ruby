@@ -61,13 +61,13 @@ module BrowserPlus
     end
 
     # invoke a function on an automatically allocated instance of the service
-    def invoke f, a = nil
+    def invoke f, a, &cb
       @instance = allocate if @instance == nil
-      @instance.invoke f, a
+      @instance.invoke f, a, &cb
     end
 
-    def method_missing func, *args
-      invoke func, args[0]
+    def method_missing func, *args, &b
+      invoke func, args[0], &b
     end
 
     def shutdown
@@ -118,7 +118,7 @@ module BrowserPlus
       @srp = p
     end
 
-    def invoke func, args
+    def invoke func, args, &cb
       args = JSON.generate(args).gsub("'", "\\'")
       cmd = "inv #{func.to_s}"
       cmd += " '#{args}'" if args != "null"
@@ -129,8 +129,11 @@ module BrowserPlus
       while i = getmsg(@srp, 4.0)
         # skip info messages
         next if i['type'] == "info"
-        # XXX: invoke passed in block for callbacks?
-        next if i['type'] == "callback"        
+        # invoke passed in block for callbacks?
+        if i['type'] == "callback"        
+          cb.call(i['msg']) if cb != nil
+          next
+        end
         break
       end
       raise "invocation failure" if i == nil || i['type'] != 'results'
@@ -141,8 +144,8 @@ module BrowserPlus
       @srp.syswrite "destroy #{@iid}\n"
     end
 
-    def method_missing func, *args
-      invoke func, args[0]
+    def method_missing func, *args, &cb
+      invoke func, args[0], cb
     end
     private
     include ProcessController
