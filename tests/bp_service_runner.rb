@@ -14,17 +14,24 @@ module BrowserPlus
   module ProcessController
     def getmsg(pio, timeo, lookFor = false)
       j = nil
-      output = String.new
-      # XXX: todo, output handler where multiple messages are combined!
-      while nil != select( [ pio ], nil, nil, timeo )  
-        output += pio.sysread(1024) 
+      @outputbuffer = String.new if (@outputbuffer == nil)
+      while true
         begin
-          j = JSON.parse(output)
-          break
+          # now peel off the first json map, taking advantage of the fact that
+          # ServiceRunner inserts newlines
+          m = @outputbuffer.match(/^([^\n]+)\n(.*)$/)
+          if m != nil
+            # regex pulls off that \n, so add it back!
+            @outputbuffer = "#{m[2]}\n";
+            j = JSON.parse(m[1])
+            return j
+          end
         rescue
         end
+        break if (nil == select( [ pio ], nil, nil, timeo ))  
+        @outputbuffer += pio.sysread(1024) 
       end
-      j
+      nil
     end
   end
 
@@ -40,7 +47,7 @@ module BrowserPlus
       end
       @srp = IO.popen(cmd, "w+")
       i = getmsg(@srp, 0.5)
-      raise "couldn't initialize" if !i['msg'] =~ /service initialized/
+      raise "couldn't initialize" if i['msg'] !~ /service initialized/
       @instance = nil
     end
 
@@ -119,8 +126,14 @@ module BrowserPlus
       # always select the current instance
       @srp.syswrite "select #{@iid}\n"
       @srp.syswrite cmd
-      i = getmsg(@srp, 4.0)
-      raise "invocation failure" if i['type'] != 'results'
+      while i = getmsg(@srp, 4.0)
+        # skip info messages
+        next if i['type'] == "info"
+        # XXX: invoke passed in block for callbacks?
+        next if i['type'] == "callback"        
+        break
+      end
+      raise "invocation failure" if i == nil || i['type'] != 'results'
       i['msg']
     end
 
