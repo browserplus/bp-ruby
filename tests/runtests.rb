@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-require File.join(File.dirname(__FILE__), 'bp_service_runner')
+require File.join(File.dirname(File.dirname(File.expand_path(__FILE__))),
+                  'external/dist/share/service_testing/bp_service_runner.rb')
 require 'uri'
 require 'test/unit'
 require 'open-uri'
