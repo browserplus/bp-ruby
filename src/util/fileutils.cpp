@@ -38,6 +38,8 @@
 #define PATHPARENT	".."
 #endif
 
+#include <stdio.h>
+
 // read the contents of a file into a std::string
 std::string file::readFile(const std::string & path)
 {

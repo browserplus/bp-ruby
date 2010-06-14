@@ -18,6 +18,7 @@ PROJECT(${serviceName}Service)
 SET (outputDir "${CMAKE_CURRENT_BINARY_DIR}/${serviceName}")
 
 # build up the "platform identifier"
+SET(arch "i386")
 IF (APPLE)
    execute_process(COMMAND uname -p
                    OUTPUT_VARIABLE arch
@@ -37,6 +38,22 @@ IF (APPLE)
    string(TOLOWER ${sysUpper} sys) 
 
    SET( platIdent "${arch}-${sys}${ver}" )
+
+   MESSAGE("platform: ${platIdent}")
+ELSEIF(UNIX)
+   execute_process(COMMAND uname -m
+                   OUTPUT_VARIABLE arch
+                   ERROR_QUIET
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+   execute_process(COMMAND uname -s
+                   OUTPUT_VARIABLE sysUpper
+                   ERROR_QUIET
+                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+   string(TOLOWER ${sysUpper} sys) 
+
+   SET( platIdent "${arch}-${sys}" )
 
    MESSAGE("platform: ${platIdent}")
 ELSE ()
@@ -122,13 +139,14 @@ SET(stdlibDest "${outputDir}/stdlib")
 SET(stdlibSource "${extLibDir}/ruby/ruby/1.9.1")
 
 SET(extDest "${outputDir}/ext")
+
 IF (APPLE) 
   FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/i386-*")
 ELSE()
   FILE(GLOB extSource "${extLibDir}/ruby/ruby/1.9.1/i386-*")
 ENDIF()
 
-IF (APPLE)
+IF (UNIX)
     SET(RM_CMD rm -rf)
 ELSE ()
     SET(RM_CMD "del /f /q")
