@@ -122,7 +122,11 @@ SET(stdlibDest "${outputDir}/stdlib")
 SET(stdlibSource "${extLibDir}/ruby/ruby/1.9.1")
 
 SET(extDest "${outputDir}/ext")
-FILE(GLOB extSource "${extLibDir}/ruby/ruby/1.9.1/i386-*")
+IF (APPLE) 
+  FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/i386-*")
+ELSE()
+  FILE(GLOB extSource "${extLibDir}/ruby/ruby/1.9.1/i386-*")
+ENDIF()
 
 IF (APPLE)
     SET(RM_CMD rm -rf)
