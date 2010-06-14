@@ -119,10 +119,10 @@ ENDIF (APPLE)
 
 
 SET(stdlibDest "${outputDir}/stdlib")
-SET(stdlibSource "${extLibDir}/ruby/1.9.1")
+SET(stdlibSource "${extLibDir}/ruby/ruby/1.9.1")
 
 SET(extDest "${outputDir}/ext")
-FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/i386-*")
+FILE(GLOB extSource "${extLibDir}/ruby/ruby/1.9.1/i386-*")
 
 IF (APPLE)
     SET(RM_CMD rm -rf)
@@ -144,18 +144,22 @@ ENDIF ()
 
 MESSAGE("ruby library to link:  ${rubyDylib}" )
 MESSAGE("library to ship:       ${rubyLibToShip}")
+MESSAGE("copy extensions from:  ${extSource}")
+MESSAGE("copy extensions to:    ${extDest}")
 
 ADD_CUSTOM_COMMAND(
     TARGET ${serviceName} POST_BUILD
     COMMAND ${RM_CMD} \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    COMMAND ${CMAKE_COMMAND} -E echo cp -r
                         \"${stdlibSource}\" \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E echo
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
                         \"${stdlibSource}\" \"${stdlibDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
 			\"${stdlibDest}\"
     COMMAND ${RM_CMD} \"${extDest}\"
+    COMMAND ${CMAKE_COMMAND} -E echo cp -r
+                        \"${extSource}\" \"${extDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
                         \"${extSource}\" \"${extDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
