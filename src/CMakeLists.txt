@@ -136,14 +136,18 @@ ENDIF (APPLE)
 
 
 SET(stdlibDest "${outputDir}/stdlib")
-SET(stdlibSource "${extLibDir}/ruby/ruby/1.9.1")
+
+FILE(GLOB pathToPathnameRb "${extLibDir}/ruby/ruby/1.9.1/pathname.rb")
+IF (NOT pathToPathnameRb) 
+  FILE(GLOB pathToPathnameRb "${extLibDir}/ruby/1.9.1/pathname.rb")
+ENDIF()
+GET_FILENAME_COMPONENT(stdlibSource ${pathToPathnameRb} PATH)
 
 SET(extDest "${outputDir}/ext")
 
-IF (APPLE) 
-  FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/i386-*")
-ELSE()
-  FILE(GLOB extSource "${extLibDir}/ruby/ruby/1.9.1/i386-*")
+FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/${arch}-*")
+IF (NOT extSource) 
+  FILE(GLOB extSource "${extLibDir}/ruby/ruby/1.9.1/${arch}-*")
 ENDIF()
 
 IF (UNIX)
@@ -167,7 +171,7 @@ ENDIF ()
 MESSAGE("ruby library to link:  ${rubyDylib}" )
 MESSAGE("library to ship:       ${rubyLibToShip}")
 MESSAGE("copy extensions from:  ${extSource}")
-MESSAGE("copy extensions to:    ${extDest}")
+MESSAGE("copy stdlib from:      ${stdlibSource}")
 
 ADD_CUSTOM_COMMAND(
     TARGET ${serviceName} POST_BUILD
