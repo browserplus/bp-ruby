@@ -1,6 +1,5 @@
 1. trim ruby distribution!  specifically, we should remove some of the
    encodings supported.
 2. test non-ascii path handling on win32
-3. add built-in support for openssl on win32
-4. add built-in support for the zlib extension on win32
-5. integrate robust system proxy support
+3. add statically linked versions of zlib and openssl extensions
+4. integrate robust system proxy support
