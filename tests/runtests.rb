@@ -46,18 +46,19 @@ class TestFileAccess < Test::Unit::TestCase
     }
   end
 
+  # XXX: openssl currently disabled!
   # slightly deeper test of built in extensions, generate
   # some keypairs!
-  def test_crypto
-    BrowserPlus.run("Crypto", @interpService) { |s|
-      assert_equal 342, s.generate.length
-      assert_equal 342, s.generate.length
-      assert_equal 342, s.generate.length
-      assert_equal 342, s.generate.length
-      assert_equal 342, s.generate.length
-      assert_equal s.listKeys.length, 5
-    }
-  end
+#  def test_crypto
+#    BrowserPlus.run("Crypto", @interpService) { |s|
+#      assert_equal 342, s.generate.length
+#      assert_equal 342, s.generate.length
+#      assert_equal 342, s.generate.length
+#      assert_equal 342, s.generate.length
+#      assert_equal 342, s.generate.length
+#      assert_equal s.listKeys.length, 5
+#    }
+#  end
 
   # A junk ruby file
   def test_syntax_error
