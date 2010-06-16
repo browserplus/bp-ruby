@@ -36,6 +36,7 @@
 #include "DataMapping.hh"
 #include "RubyUtils.hh"
 #include "BuiltIns.hh"
+#include "util/widetoutf8.hh"
 
 static int hashPopulator(VALUE key, VALUE value, VALUE callbackData)
 {
@@ -98,7 +99,7 @@ rubyToBPObject(VALUE v)
                     VALUE pathString =
                         ruby::invokeFunction(absPath, "to_s", &error, 0);
                     if (!error && TYPE(pathString) == T_STRING) {
-                        obj = new bp::Path(RSTRING_PTR(pathString));
+						obj = new bp::Path((const BPPath) convert::fromUTF8(RSTRING_PTR(pathString)).c_str());
                     }
                     break;
                 }
@@ -154,7 +155,7 @@ bpObjectToRuby(const bp::Object * obj,
                 (klass = rb_const_get(rb_cObject, id)) &&
                 TYPE(klass) == T_CLASS)
             {
-                std::string path = ((bp::Path *) obj)->value();
+				std::string path = convert::toUTF8(((bp::Path *) obj)->value());
                 VALUE p = rb_str_new2(path.c_str());
                 v = rb_class_new_instance(1, &p, klass);
             }

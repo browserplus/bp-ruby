@@ -98,6 +98,7 @@ SET(SRCS
   RubyWork.cpp
   RubyUtils.cpp
   util/fileutils.cpp
+  util/widetoutf8.cpp
   Definition.cpp
   DataMapping.cpp
   BuiltIns.cpp

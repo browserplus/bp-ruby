@@ -39,6 +39,7 @@
 // an abstraction around ruby 
 #include "RubyInterpreter.hh"
 #include "RubyHeaders.hh"
+#include "util/widetoutf8.hh"
 
 #include <map>
 #include <string>
@@ -132,7 +133,7 @@ BPPInitialize(const BPCFunctionTable * coreFunctionTable,
             serviceDir);
 
         // now let's initialize the ruby Interpreter
-        (void) ruby::initialize(serviceDir);
+		(void) ruby::initialize(convert::toUTF8(serviceDir));
 
         // the name of the ruby script and path can be extracted from the
         // dependent parameters map 
@@ -142,9 +143,9 @@ BPPInitialize(const BPCFunctionTable * coreFunctionTable,
             delete params;
             return NULL;
         }
-        std::string path(dependentDir);
+		std::string path(convert::toUTF8(dependentDir));
         path.append(PATHSEP);
-        path.append(((bp::Path *) params->get("ScriptFile"))->value());    
+        path.append(((bp::String *) params->get("ScriptFile"))->value());    
 
         std::string error;
         s_desc = ruby::loadRubyService(path, error);
