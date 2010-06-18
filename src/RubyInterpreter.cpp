@@ -300,9 +300,10 @@ void ruby::shutdown(void)
         s_rubyCond.signal();        
         s_rubyLock.unlock();
         s_rubyThread.join();
+
+        // XXX: does this need to be called on the proper thread?
+        (void) ruby_finalize();
     }
-    
-    (void) ruby_finalize();
 }
 
 bp::service::Description *
