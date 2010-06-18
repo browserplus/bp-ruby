@@ -114,7 +114,7 @@ BPPInitialize(const BPCFunctionTable * coreFunctionTable,
         // a description of this corelet.
         static BPServiceDefinition s_rubyInterpreterDef = {
             "RubyInterpreter",
-            5, 0, 1,
+            5, 0, 2,
             "Allows other services to be written in Ruby.",
             0,
             NULL
