@@ -8,8 +8,13 @@ require 'open-uri'
 
 class TestFileAccess < Test::Unit::TestCase
   def setup
+    # arguments are a string that must match the test name
+    @subdir = 'build'
+    if ENV.key?('BP_OUTPUT_DIR')
+      @subdir = ENV['BP_OUTPUT_DIR']
+    end
     @cwd = File.dirname(File.expand_path(__FILE__))
-    @interpService = File.join(@cwd, "../build/RubyInterpreter")
+    @interpService = File.join(@cwd, "../#{@subdir}/RubyInterpreter")
   end
   
   def teardown
