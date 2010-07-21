@@ -87,40 +87,16 @@ devenv RubyInterpreterService.sln /Build Release /Project ALL_BUILD
         <delete file="../build/x1.bat" />
     </target>
     <target name="test_make_debug" unless="is.windows">
-        <exec executable="make" dir="../build_debug" failonerror="true">
-            <arg line="test" />
-        </exec>
+        <!-- NO-OP -->
     </target>
     <target name="test_make_release" unless="is.windows">
-        <exec executable="make" dir="../build_release" failonerror="true">
-            <arg line="test" />
-        </exec>
+        <!-- NO-OP -->
     </target>
     <target name="test_vc08_debug" if="is.windows">
-        <delete file="../build/x1.bat" />
-        <echo file="../build/x1.bat">@echo off
-call "C:\Program Files\Microsoft Visual Studio 9.0\vc\bin\vcvars32.bat"
-if not %WINTEMP%*==* set TEMP=%WINTEMP%
-if not %WINTMP%*==* set TMP=%WINTMP%
-devenv RubyInterpreterService.sln /Build Debug /Project test
-        </echo>
-        <exec executable="cmd" dir="../build" failonerror="true">
-            <arg line="/C x1.bat" />
-        </exec>
-        <delete file="../build/x1.bat" />
+        <!-- NO-OP -->
     </target>
     <target name="test_vc08_release" if="is.windows">
-        <delete file="../build/x1.bat" />
-        <echo file="../build/x1.bat">@echo off
-call "C:\Program Files\Microsoft Visual Studio 9.0\vc\bin\vcvars32.bat"
-if not %WINTEMP%*==* set TEMP=%WINTEMP%
-if not %WINTMP%*==* set TMP=%WINTMP%
-devenv RubyInterpreterService.sln /Build Release /Project test
-        </echo>
-        <exec executable="cmd" dir="../build" failonerror="true">
-            <arg line="/C x1.bat" />
-        </exec>
-        <delete file="../build/x1.bat" />
+        <!-- NO-OP -->
     </target>
     <target name="clean_debug" depends="clean_make_debug,clean_vc08_debug" />
     <target name="clean_release" depends="clean_make_release,clean_vc08_release" />
