@@ -47,7 +47,7 @@
     <target name="test_vc08_debug" if="is.windows">
         <delete file="x1.bat" />
         <echo file="x1.bat">@echo off
-set BP_OUTPUT_DIRTEMP=build/RubyInterpreter
+set BP_OUTPUT_DIR=build/RubyInterpreter
 ruby .\runtests.rb --runner cppunit_runner
         </echo>
         <exec executable="cmd" failonerror="true">
@@ -58,7 +58,7 @@ ruby .\runtests.rb --runner cppunit_runner
     <target name="test_vc08_release" if="is.windows">
         <delete file="x1.bat" />
         <echo file="x1.bat">@echo off
-set BP_OUTPUT_DIRTEMP=build/RubyInterpreter
+set BP_OUTPUT_DIR=build/RubyInterpreter
 ruby .\runtests.rb --runner cppunit_runner
         </echo>
         <exec executable="cmd" failonerror="true">
