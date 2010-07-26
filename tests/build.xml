@@ -35,20 +35,20 @@
     <target name="test_make_debug" unless="is.windows">
         <exec executable="ruby" failonerror="true">
             <env key="BP_OUTPUT_DIR" value="build_debug/RubyInterpreter" />
-            <arg line="./runtests.rb" />
+            <arg line="./runtests.rb --runner cppunit_runner" />
         </exec>
     </target>
     <target name="test_make_release" unless="is.windows">
         <exec executable="ruby" failonerror="true">
             <env key="BP_OUTPUT_DIR" value="build_release/RubyInterpreter" />
-            <arg line="./runtests.rb" />
+            <arg line="./runtests.rb --runner cppunit_runner" />
         </exec>
     </target>
     <target name="test_vc08_debug" if="is.windows">
         <delete file="x1.bat" />
         <echo file="x1.bat">@echo off
 set BP_OUTPUT_DIRTEMP=build/RubyInterpreter
-ruby .\runtests.rb
+ruby .\runtests.rb --runner cppunit_runner
         </echo>
         <exec executable="cmd" failonerror="true">
             <arg line="/C x1.bat" />
@@ -59,7 +59,7 @@ ruby .\runtests.rb
         <delete file="x1.bat" />
         <echo file="x1.bat">@echo off
 set BP_OUTPUT_DIRTEMP=build/RubyInterpreter
-ruby .\runtests.rb
+ruby .\runtests.rb --runner cppunit_runner
         </echo>
         <exec executable="cmd" failonerror="true">
             <arg line="/C x1.bat" />
