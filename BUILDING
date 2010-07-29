@@ -1,0 +1,8 @@
+XXX: Here's roughly how to get it building today
+
+1. git clone git://github.com/browserplus/bp-ruby
+2. cd bp-ruby
+3. mkdir src/build
+4. cd src/build
+5. cmake ..  (cmake -G "Visual Studio 9 2008" .. on Windows)
+6. make  (devenv RubyInterpreterService.sln on Windows)
