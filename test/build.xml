@@ -1,4 +1,4 @@
-<project name="BrowserPlusRuby_tests" default="build_release">
+<project name="BrowserPlusRuby_test" default="build_release">
     <condition property="is.windows">
         <os family="windows" />
     </condition>
