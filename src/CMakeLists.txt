@@ -71,6 +71,7 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF ()
 
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
+SET(extBinDir "${extDir}/dist/bin")
 SET(extLibDir "${extDir}/dist/lib/${CMAKE_BUILD_TYPE}")
 SET(extIncDir "${extDir}/dist/include/ruby19")
 SET(CPPTOOLS_DIR "${extDir}/bp-service-tools/CppTools/src")
@@ -178,28 +179,56 @@ MESSAGE("library to ship:       ${rubyLibToShip}")
 MESSAGE("copy extensions from:  ${extSource}")
 MESSAGE("copy stdlib from:      ${stdlibSource}")
 
-ADD_CUSTOM_COMMAND(
-    TARGET ${serviceName} POST_BUILD
-    COMMAND ${RM_CMD} \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E echo cp -r
-                        \"${stdlibSource}\" \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        \"${stdlibSource}\" \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
-			\"${stdlibDest}\"
-    COMMAND ${RM_CMD} \"${extDest}\"
-    COMMAND ${CMAKE_COMMAND} -E echo cp -r
-                        \"${extSource}\" \"${extDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        \"${extSource}\" \"${extDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
-            \"${outputDir}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            \"${rubyLibToShip}\"
-            \"${outputDir}\"
-)
+IF (WIN32)
+  ADD_CUSTOM_COMMAND(
+      TARGET ${serviceName} POST_BUILD
+      COMMAND ${RM_CMD} \"${stdlibDest}\"
+      COMMAND ${CMAKE_COMMAND} -E echo cp -r
+                          \"${stdlibSource}\" \"${stdlibDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+                          \"${stdlibSource}\" \"${stdlibDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
+  			\"${stdlibDest}\"
+      COMMAND ${RM_CMD} \"${extDest}\"
+      COMMAND ${CMAKE_COMMAND} -E echo cp -r
+                          \"${extSource}\" \"${extDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+                          \"${extSource}\" \"${extDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
+              \"${outputDir}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              \"${rubyLibToShip}\"
+              \"${outputDir}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              \"${extBinDir}/msvcr90-ruby191.dll\"
+              \"${outputDir}\"
+  )
+ELSE ()
+  ADD_CUSTOM_COMMAND(
+      TARGET ${serviceName} POST_BUILD
+      COMMAND ${RM_CMD} \"${stdlibDest}\"
+      COMMAND ${CMAKE_COMMAND} -E echo cp -r
+                          \"${stdlibSource}\" \"${stdlibDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+                          \"${stdlibSource}\" \"${stdlibDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
+  			\"${stdlibDest}\"
+      COMMAND ${RM_CMD} \"${extDest}\"
+      COMMAND ${CMAKE_COMMAND} -E echo cp -r
+                          \"${extSource}\" \"${extDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+                          \"${extSource}\" \"${extDest}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
+              \"${outputDir}\"
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              \"${rubyLibToShip}\"
+              \"${outputDir}\"
+  )
+ENDIF ()
 
 IF (APPLE)  
   # repeat after me:  I love dylibs
