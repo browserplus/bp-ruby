@@ -6,7 +6,7 @@ require 'uri'
 require 'test/unit'
 require 'open-uri'
 
-class TestFileAccess < Test::Unit::TestCase
+class TestRuby < Test::Unit::TestCase
   def setup
     # arguments are a string that must match the test name
     subdir = 'build/RubyInterpreter'
@@ -33,7 +33,6 @@ class TestFileAccess < Test::Unit::TestCase
 
   def test_basic_service
     BrowserPlus.run(File.join(@cwd, "BasicService"), @interpService) { |s|
-      require 'pp'
       r = s.hello({:who => 'lloyd'}) { |o|
         assert_equal o['callback'], 1
         assert_equal o['args'], "Hi there lloyd"
