@@ -37,8 +37,7 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.1)
 
-# pull in build configuration
-INCLUDE(BuildConfigs.cmake)
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-framework/build_support/BuildConfigs.cmake)
 
 SET (serviceName RubyInterpreter)
 
@@ -89,9 +88,6 @@ ELSE ()
    # hard coded for now!
    SET( platIdent "i386-mswin32_90" )
 ENDIF ()
-
-# looser syntax (that's my patch!)
-SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 # default to a debug build.  This gets us symbols by default under
 # the cmake makefile generator
