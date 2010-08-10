@@ -97,7 +97,11 @@ ENDIF ()
 
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
 SET(extBinDir "${extDir}/dist/bin")
-SET(extLibDir "${extDir}/dist/lib/${CMAKE_BUILD_TYPE}")
+IF ("${CMAKE_BUILD_TYPE}" STREQUAL "CodeCoverage")
+  SET(extLibDir "${extDir}/dist/lib/Debug")
+ELSE ()
+  SET(extLibDir "${extDir}/dist/lib/${CMAKE_BUILD_TYPE}")
+ENDIF ()
 SET(extIncDir "${extDir}/dist/include/ruby19")
 SET(CPPTOOLS_DIR "${extDir}/bp-service-tools/CppTools/src")
 
