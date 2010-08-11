@@ -45,36 +45,36 @@ INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-framework/build_suppo
 # build up the "platform identifier"
 SET(arch "i386")
 IF (APPLE)
- EXECUTE_PROCESS(COMMAND uname -p
-                 OUTPUT_VARIABLE arch
-                 ERROR_QUIET
-                 OUTPUT_STRIP_TRAILING_WHITESPACE)
- EXECUTE_PROCESS(COMMAND uname -r
-                 OUTPUT_VARIABLE ver
-                 ERROR_QUIET
-                 OUTPUT_STRIP_TRAILING_WHITESPACE)
- EXECUTE_PROCESS(COMMAND uname -s
-                 OUTPUT_VARIABLE sysUpper
-                 ERROR_QUIET
-                 OUTPUT_STRIP_TRAILING_WHITESPACE)
- STRING(TOLOWER ${sysUpper} sys) 
- SET(platIdent "${arch}-${sys}${ver}")
- MESSAGE("platform: ${platIdent}")
-ELSEIF(UNIX)
- EXECUTE_PROCESS(COMMAND uname -m
-                 OUTPUT_VARIABLE arch
-                 ERROR_QUIET
-                 OUTPUT_STRIP_TRAILING_WHITESPACE)
- EXECUTE_PROCESS(COMMAND uname -s
-                 OUTPUT_VARIABLE sysUpper
-                 ERROR_QUIET
-                 OUTPUT_STRIP_TRAILING_WHITESPACE)
- STRING(TOLOWER ${sysUpper} sys) 
- SET(platIdent "${arch}-${sys}")
- MESSAGE("platform: ${platIdent}")
+  EXECUTE_PROCESS(COMMAND uname -p
+                  OUTPUT_VARIABLE arch
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  EXECUTE_PROCESS(COMMAND uname -r
+                  OUTPUT_VARIABLE ver
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  EXECUTE_PROCESS(COMMAND uname -s
+                  OUTPUT_VARIABLE sysUpper
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  STRING(TOLOWER ${sysUpper} sys) 
+  SET(platIdent "${arch}-${sys}${ver}")
+  MESSAGE("platform: ${platIdent}")
+ELSEIF (UNIX)
+  EXECUTE_PROCESS(COMMAND uname -m
+                  OUTPUT_VARIABLE arch
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  EXECUTE_PROCESS(COMMAND uname -s
+                  OUTPUT_VARIABLE sysUpper
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  STRING(TOLOWER ${sysUpper} sys) 
+  SET(platIdent "${arch}-${sys}")
+  MESSAGE("platform: ${platIdent}")
 ELSE ()
- # hard coded for now!
- SET(platIdent "i386-mswin32_90")
+  # hard coded for now!
+  SET(platIdent "i386-mswin32_90")
 ENDIF ()
 
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
@@ -139,20 +139,18 @@ SET(LIBS ${rubyDylibName})
 
 BPAddCppService()
 
-SET(stdlibDest "${OUTPUT_DIR}/stdlib")
-
 FILE(GLOB pathToPathnameRb "${extLibDir}/ruby/ruby/1.9.1/pathname.rb")
 IF (NOT pathToPathnameRb) 
   FILE(GLOB pathToPathnameRb "${extLibDir}/ruby/1.9.1/pathname.rb")
 ENDIF()
 GET_FILENAME_COMPONENT(stdlibSource ${pathToPathnameRb} PATH)
-
-SET(extDest "${OUTPUT_DIR}/ext")
+SET(stdlibDest "${OUTPUT_DIR}/stdlib")
 
 FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/${arch}-*")
 IF (NOT extSource) 
   FILE(GLOB extSource "${extLibDir}/ruby/ruby/1.9.1/${arch}-*")
 ENDIF()
+SET(extDest "${OUTPUT_DIR}/ext")
 
 IF (UNIX)
   SET(RM_CMD rm -rf)
@@ -165,9 +163,6 @@ ELSE ()
 ENDIF ()
 
 GET_FILENAME_COMPONENT(rubyDylibName ${rubyDylib} NAME)
-
-# get location of output service library
-#GET_TARGET_PROPERTY(loc ${SERVICE_NAME} LOCATION)
 
 # handle the .lib .dll dichotomy
 SET (rubyLibToShip ${rubyDylib})
@@ -182,26 +177,30 @@ MESSAGE("copy extensions from:  ${extSource}")
 MESSAGE("copy stdlib from:      ${stdlibSource}")
 
 ADD_CUSTOM_COMMAND(
-    TARGET ${SERVICE_NAME} POST_BUILD
-    COMMAND ${RM_CMD} \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E echo cp -r
-                        \"${stdlibSource}\" \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        \"${stdlibSource}\" \"${stdlibDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
-  			\"${stdlibDest}\"
-    COMMAND ${RM_CMD} \"${extDest}\"
-    COMMAND ${CMAKE_COMMAND} -E echo cp -r
-                        \"${extSource}\" \"${extDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        \"${extSource}\" \"${extDest}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
-            \"${OUTPUT_DIR}\"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            \"${rubyLibToShip}\"
-            \"${OUTPUT_DIR}\"
+  TARGET ${SERVICE_NAME} POST_BUILD
+  COMMAND ${RM_CMD} \"${stdlibDest}\"
+  COMMAND ${CMAKE_COMMAND} -E echo cp -r
+          \"${stdlibSource}\"
+          \"${stdlibDest}\"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          \"${stdlibSource}\"
+          \"${stdlibDest}\"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          \"${CMAKE_CURRENT_SOURCE_DIR}/ruby/browserplus.rb\"
+          \"${stdlibDest}\"
+  COMMAND ${RM_CMD} \"${extDest}\"
+  COMMAND ${CMAKE_COMMAND} -E echo cp -r
+          \"${extSource}\"
+          \"${extDest}\"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          \"${extSource}\"
+          \"${extDest}\"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
+          \"${OUTPUT_DIR}\"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          \"${rubyLibToShip}\"
+          \"${OUTPUT_DIR}\"
 )
 
 IF (APPLE)  
@@ -211,19 +210,19 @@ IF (APPLE)
   SET(librubyBefore "libruby.dylib")
   SET(librubyAfter "libruby_bp.dylib")
   ADD_CUSTOM_COMMAND(
-      TARGET ${SERVICE_NAME} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy \"${OUTPUT_DIR}/${librubyBefore}\" \"${OUTPUT_DIR}/${librubyAfter}\"   
-      COMMAND ${CMAKE_COMMAND} -E remove \"${OUTPUT_DIR}/${librubyBefore}\"
-      COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup.sh | tr -d '\r' > ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh
-      COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup.sh | tr -d '\r' > ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh
-      COMMAND chmod 777 ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh
-      COMMAND chmod 777 ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh
-      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh ${loc}
-      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh ${loc}
-      COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh \"${extDest}\"
-      COMMAND ${CMAKE_COMMAND} -E remove \"${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh\"
-      COMMAND ${CMAKE_COMMAND} -E remove \"${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh\"
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different \"${loc}\" \"${OUTPUT_DIR}\"
+    TARGET ${SERVICE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy \"${OUTPUT_DIR}/${librubyBefore}\" \"${OUTPUT_DIR}/${librubyAfter}\"   
+    COMMAND ${CMAKE_COMMAND} -E remove \"${OUTPUT_DIR}/${librubyBefore}\"
+    COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup.sh | tr -d '\r' > ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh
+    COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup.sh | tr -d '\r' > ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh
+    COMMAND chmod 777 ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh
+    COMMAND chmod 777 ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh ${loc}
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh ${loc}
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh \"${extDest}\"
+    COMMAND ${CMAKE_COMMAND} -E remove \"${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh\"
+    COMMAND ${CMAKE_COMMAND} -E remove \"${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh\"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different \"${loc}\" \"${OUTPUT_DIR}\"
   )
 ENDIF ()
 
