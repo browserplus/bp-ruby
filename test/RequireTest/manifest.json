@@ -1,16 +1,16 @@
 {
-  "type": "dependent",
-  "uses": {
-    "corelet": "RubyInterpreter",
-    "version": "5"
+  "type":"dependent",
+  "arguments":{
+    "ScriptFile":"hello_world.rb"
   },
-  "arguments": {
-    "ScriptFile": "hello_world.rb"
+  "uses":{
+    "corelet":"RubyInterpreter",
+    "version":"5"
   },
-  "strings": {
-    "en": {
-      "title": "Hello World Service",
-      "summary": "the simplest of simple."
+  "strings":{
+    "en":{
+      "title":"Hello World Service",
+      "summary":"the simplest of simple."
     }
   }
 }

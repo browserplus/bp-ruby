@@ -37,61 +37,44 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.1)
 
-SET (serviceName RubyInterpreter)
-PROJECT(${serviceName}Service)
+SET (SERVICE_NAME RubyInterpreter)
+PROJECT(${SERVICE_NAME}Service)
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-framework/build_support/BuildConfigs.cmake)
-
-SET (outputDir "${CMAKE_CURRENT_BINARY_DIR}/${serviceName}")
 
 # build up the "platform identifier"
 SET(arch "i386")
 IF (APPLE)
-   execute_process(COMMAND uname -p
-                   OUTPUT_VARIABLE arch
-                   ERROR_QUIET
-                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-   execute_process(COMMAND uname -r
-                   OUTPUT_VARIABLE ver
-                   ERROR_QUIET
-                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-   execute_process(COMMAND uname -s
-                   OUTPUT_VARIABLE sysUpper
-                   ERROR_QUIET
-                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-   string(TOLOWER ${sysUpper} sys) 
-
-   SET( platIdent "${arch}-${sys}${ver}" )
-
-   MESSAGE("platform: ${platIdent}")
+ EXECUTE_PROCESS(COMMAND uname -p
+                 OUTPUT_VARIABLE arch
+                 ERROR_QUIET
+                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+ EXECUTE_PROCESS(COMMAND uname -r
+                 OUTPUT_VARIABLE ver
+                 ERROR_QUIET
+                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+ EXECUTE_PROCESS(COMMAND uname -s
+                 OUTPUT_VARIABLE sysUpper
+                 ERROR_QUIET
+                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+ STRING(TOLOWER ${sysUpper} sys) 
+ SET(platIdent "${arch}-${sys}${ver}")
+ MESSAGE("platform: ${platIdent}")
 ELSEIF(UNIX)
-   execute_process(COMMAND uname -m
-                   OUTPUT_VARIABLE arch
-                   ERROR_QUIET
-                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-   execute_process(COMMAND uname -s
-                   OUTPUT_VARIABLE sysUpper
-                   ERROR_QUIET
-                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-   string(TOLOWER ${sysUpper} sys) 
-
-   SET( platIdent "${arch}-${sys}" )
-
-   MESSAGE("platform: ${platIdent}")
+ EXECUTE_PROCESS(COMMAND uname -m
+                 OUTPUT_VARIABLE arch
+                 ERROR_QUIET
+                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+ EXECUTE_PROCESS(COMMAND uname -s
+                 OUTPUT_VARIABLE sysUpper
+                 ERROR_QUIET
+                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+ STRING(TOLOWER ${sysUpper} sys) 
+ SET(platIdent "${arch}-${sys}")
+ MESSAGE("platform: ${platIdent}")
 ELSE ()
-   # hard coded for now!
-   SET( platIdent "i386-mswin32_90" )
-ENDIF ()
-
-# default to a debug build.  This gets us symbols by default under
-# the cmake makefile generator
-IF (NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE "Debug")
+ # hard coded for now!
+ SET(platIdent "i386-mswin32_90")
 ENDIF ()
 
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
@@ -115,11 +98,28 @@ INCLUDE_DIRECTORIES(
 SET(rubyLibPath ${extLibDir})
 LINK_DIRECTORIES(${rubyLibPath})
 
+# os specific srcs
+IF (WIN32)
+   FILE(GLOB OS_SRCS "util/*_Windows.cpp")
+ELSE()
+   FILE(GLOB OS_SRCS "util/*_Darwin.cpp" "util/*_UNIX.cpp")
+ENDIF ()
+
 SET(EXT_SRCS
   "${CPPTOOLS_DIR}/bptypeutil.cpp"
   "${CPPTOOLS_DIR}/bpservicedescription.cpp"
   "${CPPTOOLS_DIR}/bpserviceversion.cpp"
 )
+
+#FILE(GLOB_RECURSE HDRS "*.hh")
+
+# find the path to the ruby library we'll link
+MESSAGE("looking in ${rubyLibPath}")
+FIND_LIBRARY(rubyDylib NAMES ruby msvcr90-ruby191
+             PATHS ${rubyLibPath}
+             NO_DEFAULT_PATH
+             NO_SYSTEM_ENVIRONMENT_PATH)
+GET_FILENAME_COMPONENT(rubyDylibName ${rubyDylib} NAME)
 
 SET(SRCS
   service.cpp
@@ -131,41 +131,15 @@ SET(SRCS
   Definition.cpp
   DataMapping.cpp
   BuiltIns.cpp
+  ${EXT_SRCS}
+  ${OS_SRCS}
 )
-
-# os specific srcs
-IF (WIN32)
-   FILE(GLOB OS_SRCS "util/*_Windows.cpp")
-ELSE()
-   FILE(GLOB OS_SRCS "util/*_Darwin.cpp" "util/*_UNIX.cpp")
-ENDIF ()
-
-FILE(GLOB_RECURSE HDRS "*.hh")
-
 SET(HDRS RubyInterpreter.hh)
-ADD_LIBRARY(${serviceName} MODULE ${EXT_SRCS} ${OS_SRCS} ${SRCS} ${HDRS})
+SET(LIBS ${rubyDylibName})
 
-# find the path to the ruby library we'll link
-MESSAGE("looking in ${rubyLibPath}")
-FIND_LIBRARY(rubyDylib NAMES ruby msvcr90-ruby191
-             PATHS ${rubyLibPath}
-             NO_DEFAULT_PATH
-             NO_SYSTEM_ENVIRONMENT_PATH)
-GET_FILENAME_COMPONENT(rubyDylibName ${rubyDylib} NAME)
+BPAddCppService()
 
-TARGET_LINK_LIBRARIES(${serviceName} ${rubyDylibName})
-
-# create service directory
-FILE(MAKE_DIRECTORY ${outputDir})
-
-IF (APPLE)
-#  ADD_CUSTOM_COMMAND(TARGET ${serviceName} POST_BUILD
-#                     COMMAND strip -x \"${outputDir}/${ServiceLibrary}\")
-ENDIF (APPLE)
-
-
-
-SET(stdlibDest "${outputDir}/stdlib")
+SET(stdlibDest "${OUTPUT_DIR}/stdlib")
 
 FILE(GLOB pathToPathnameRb "${extLibDir}/ruby/ruby/1.9.1/pathname.rb")
 IF (NOT pathToPathnameRb) 
@@ -173,7 +147,7 @@ IF (NOT pathToPathnameRb)
 ENDIF()
 GET_FILENAME_COMPONENT(stdlibSource ${pathToPathnameRb} PATH)
 
-SET(extDest "${outputDir}/ext")
+SET(extDest "${OUTPUT_DIR}/ext")
 
 FILE(GLOB extSource "${extLibDir}/ruby/1.9.1/${arch}-*")
 IF (NOT extSource) 
@@ -181,19 +155,19 @@ IF (NOT extSource)
 ENDIF()
 
 IF (UNIX)
-    SET(RM_CMD rm -rf)
+  SET(RM_CMD rm -rf)
 ELSE ()
-IF (WIN32) 
+  IF (WIN32) 
     SET(RM_CMD ${CMAKE_COMMAND} -E remove_directory)
-ELSE ()
+  ELSE ()
     SET(RM_CMD "del /f /q")
-ENDIF ()
+  ENDIF ()
 ENDIF ()
 
-GET_FILENAME_COMPONENT( rubyDylibName ${rubyDylib} NAME )
+GET_FILENAME_COMPONENT(rubyDylibName ${rubyDylib} NAME)
 
 # get location of output service library
-GET_TARGET_PROPERTY(loc ${serviceName} LOCATION)
+#GET_TARGET_PROPERTY(loc ${SERVICE_NAME} LOCATION)
 
 # handle the .lib .dll dichotomy
 SET (rubyLibToShip ${rubyDylib})
@@ -208,7 +182,7 @@ MESSAGE("copy extensions from:  ${extSource}")
 MESSAGE("copy stdlib from:      ${stdlibSource}")
 
 ADD_CUSTOM_COMMAND(
-    TARGET ${serviceName} POST_BUILD
+    TARGET ${SERVICE_NAME} POST_BUILD
     COMMAND ${RM_CMD} \"${stdlibDest}\"
     COMMAND ${CMAKE_COMMAND} -E echo cp -r
                         \"${stdlibSource}\" \"${stdlibDest}\"
@@ -224,10 +198,10 @@ ADD_CUSTOM_COMMAND(
                         \"${extSource}\" \"${extDest}\"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt\"
-            \"${outputDir}\"
+            \"${OUTPUT_DIR}\"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             \"${rubyLibToShip}\"
-            \"${outputDir}\"
+            \"${OUTPUT_DIR}\"
 )
 
 IF (APPLE)  
@@ -236,11 +210,10 @@ IF (APPLE)
   # dylib, and will help THAT guy find stdlib extensions (.bundles in ext/)
   SET(librubyBefore "libruby.dylib")
   SET(librubyAfter "libruby_bp.dylib")
-
   ADD_CUSTOM_COMMAND(
-      TARGET ${serviceName} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy \"${outputDir}/${librubyBefore}\" \"${outputDir}/${librubyAfter}\"   
-      COMMAND ${CMAKE_COMMAND} -E remove \"${outputDir}/${librubyBefore}\"
+      TARGET ${SERVICE_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy \"${OUTPUT_DIR}/${librubyBefore}\" \"${OUTPUT_DIR}/${librubyAfter}\"   
+      COMMAND ${CMAKE_COMMAND} -E remove \"${OUTPUT_DIR}/${librubyBefore}\"
       COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup.sh | tr -d '\r' > ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh
       COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup.sh | tr -d '\r' > ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh
       COMMAND chmod 777 ${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh
@@ -250,22 +223,7 @@ IF (APPLE)
       COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh \"${extDest}\"
       COMMAND ${CMAKE_COMMAND} -E remove \"${CMAKE_CURRENT_SOURCE_DIR}/libruby_fixup_unix.sh\"
       COMMAND ${CMAKE_COMMAND} -E remove \"${CMAKE_CURRENT_SOURCE_DIR}/ext_fixup_unix.sh\"
-      )
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different \"${loc}\" \"${OUTPUT_DIR}\"
+  )
 ENDIF ()
 
-# copy in manifest
-GET_FILENAME_COMPONENT(ServiceLibrary "${loc}" NAME)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/manifest.json"
-               "${outputDir}/manifest.json")  
-ADD_CUSTOM_COMMAND(TARGET ${serviceName} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                           \"${loc}\" \"${outputDir}\")
-
-# Pre-build step, build our externals
-#
-ADD_CUSTOM_TARGET(
-    ${serviceName}Externals ALL
-    COMMAND ruby build.rb
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../external"
-    COMMENT Building externals...)
-ADD_DEPENDENCIES(${serviceName} ${serviceName}Externals)

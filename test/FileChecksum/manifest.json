@@ -1,16 +1,16 @@
 {
-  "type": "dependent",
-  "uses": {
-    "corelet": "RubyInterpreter",
-    "version": "5"
+  "type":"dependent",
+  "arguments":{
+    "ScriptFile":"checksum.rb"
   },
-  "arguments": {
-    "ScriptFile": "checksum.rb"
+  "uses":{
+    "corelet":"RubyInterpreter",
+    "version":"5"
   },
-  "strings": {
-    "en": {
-      "title": "File Checksumer",
-      "summary": "A tool to create digital fingerprints of files."
+  "strings":{
+    "en":{
+      "title":"File Checksumer",
+      "summary":"A tool to create digital fingerprints of files."
     }
   }
 }
