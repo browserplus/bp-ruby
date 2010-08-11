@@ -1,6 +1,6 @@
 {
   "type": "provider",
-  "CoreletLibrary": "@ServiceLibrary@",
+  "CoreletLibrary": "@SERVICE_LIBRARY@",
   "strings": { 
     "en": { 
         "title": "Ruby Engine", 
