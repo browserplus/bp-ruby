@@ -40,7 +40,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.1)
 SET (SERVICE_NAME RubyInterpreter)
 PROJECT(${SERVICE_NAME}Service)
 
-INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-service-framework/build_support/BuildConfigs.cmake)
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-build-templates/cmake/BuildConfigs.cmake)
 
 # build up the "platform identifier"
 SET(arch "i386")
