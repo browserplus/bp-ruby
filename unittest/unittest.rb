@@ -29,7 +29,8 @@ class TestRuby < Test::Unit::TestCase
       # XXX: service runner needs to grow up here.
       #textfile_uri = (( textfile_path[0] == "/") ? "file://" : "file:///" ) + textfile_path
       textfile_uri = "path:" + textfile_path
-      assert_equal "47679c5bd17cefc6df5f9521618e1389",  s.md5({:file => textfile_uri})
+      #assert_equal "47679c5bd17cefc6df5f9521618e1389",  s.md5({:file => textfile_uri})
+      assert_equal "babc871bf6893c8313686e31cb87816a",  s.md5({:file => textfile_uri})
     }
   end
 
