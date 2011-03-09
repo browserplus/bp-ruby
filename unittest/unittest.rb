@@ -7,6 +7,7 @@ require 'test/unit'
 require 'open-uri'
 require 'rbconfig'
 include Config
+require 'digest/md5'
 
 class TestRuby < Test::Unit::TestCase
   def setup
@@ -26,13 +27,14 @@ class TestRuby < Test::Unit::TestCase
     BrowserPlus.runProvider(File.join(@cwd, "FileChecksum"), @interpService) { |s|
       curDir = File.dirname(__FILE__)
       textfile_path = File.expand_path(File.join(curDir, "services.txt"))
-      # XXX: service runner needs to grow up here.
-      #textfile_uri = (( textfile_path[0] == "/") ? "file://" : "file:///" ) + textfile_path
       textfile_uri = "path:" + textfile_path
-      # WIN32
-      #assert_equal "47679c5bd17cefc6df5f9521618e1389",  s.md5({:file => textfile_uri})
-      # OSX
-      #assert_equal "babc871bf6893c8313686e31cb87816a",  s.md5({:file => textfile_uri})
+      # Need to open as binary because Ruby on Windows will
+      # normalize line endings otherwise, leading to incorrect MD5.
+      File.open(textfile_path, "rb") { |f|
+        want = Digest::MD5.hexdigest(f.read)
+        got = s.md5({ "file" => textfile_uri })
+        assert_equal(want, got)
+      }
     }
   end
 
@@ -43,7 +45,6 @@ class TestRuby < Test::Unit::TestCase
         assert_equal o['args'], "Hi there lloyd"
       }
       assert_equal r, "hello lloyd"
-
       # now for syntax error
       assert_raise(RuntimeError) { s.syntax }
     }
@@ -56,20 +57,6 @@ class TestRuby < Test::Unit::TestCase
       assert_equal s.sha1, Digest::SHA1.hexdigest("hello world")
     }
   end
-
-  # XXX: openssl currently disabled!
-  # slightly deeper test of built in extensions, generate
-  # some keypairs!
-#  def test_crypto
-#    BrowserPlus.runProvider("Crypto", @interpService) { |s|
-#      assert_equal 342, s.generate.length
-#      assert_equal 342, s.generate.length
-#      assert_equal 342, s.generate.length
-#      assert_equal 342, s.generate.length
-#      assert_equal 342, s.generate.length
-#      assert_equal s.listKeys.length, 5
-#    }
-#  end
 
   # A junk ruby file
   def test_syntax_error
