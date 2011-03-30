@@ -1,5 +1,7 @@
 how to build:
  
+NOTE: On Windows, must build from a cmd.exe shell.
+
  git submodule init
  git submodule update --recursive
  cd external && ruby build.rb && cd ..
