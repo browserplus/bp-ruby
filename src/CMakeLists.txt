@@ -42,6 +42,17 @@ PROJECT(${SERVICE_NAME}Service)
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/../external/bp-build-templates/cmake/BuildConfigs.cmake)
 
+SET(vsVersion "")
+IF (WIN32)
+  IF (MSVC90)
+    SET(vsVersion "90")
+  ELSEIF (MSVC10)
+    SET(vsVersion "100")
+  ELSE ()
+    MESSAGE(FATAL_ERROR "Using unsupported Windows compiler")
+  ENDIF ()
+ENDIF ()
+
 # build up the "platform identifier"
 SET(arch "i386")
 IF (APPLE)
@@ -73,8 +84,7 @@ ELSEIF (UNIX)
   SET(platIdent "${arch}-${sys}")
   MESSAGE("platform: ${platIdent}")
 ELSE ()
-  # hard coded for now!
-  SET(platIdent "i386-mswin32_90")
+  SET(platIdent "i386-mswin32_${vsVersion}")
 ENDIF ()
 
 SET(extDir "${CMAKE_CURRENT_SOURCE_DIR}/../external")
@@ -115,7 +125,7 @@ SET(EXT_SRCS
 
 # find the path to the ruby library we'll link
 MESSAGE("looking in ${rubyLibPath}")
-FIND_LIBRARY(rubyDylib NAMES ruby msvcr90-ruby191
+FIND_LIBRARY(rubyDylib NAMES ruby msvcr${vsVersion}-ruby191
              PATHS ${rubyLibPath}
              NO_DEFAULT_PATH
              NO_SYSTEM_ENVIRONMENT_PATH)
